@@ -13,7 +13,7 @@ export const updateActionProgress = (resourceCount, setResourceCount,
         var prog = actionProgress[key];
         var speed_mod = Math.pow(1/Object.keys(actionProgress).length, 0.8);
         // Real version should start with 0.001 * ...
-        prog["timeLeft"] -= speed_mod*ms*prog["action"]["speed"](resourceCount);
+        prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](resourceCount);
         if (prog["timeLeft"] > 0) {
             newActionProgress[key] = prog;
         }
