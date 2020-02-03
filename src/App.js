@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import MenuPane from './components/MenuPane';
@@ -7,7 +7,7 @@ import StoryPane from './components/StoryPane';
 import InfoPane from './components/InfoPane';
 import {useGameState} from './state_hook.js';
 import { useInterval } from './useInterval';
-import {updateActionProgress} from './gameLogic.js';
+import {updateActionProgress, gameSave, loadGame} from './gameLogic.js';
 
 function App() {
     const [pane, setPane,
@@ -16,6 +16,12 @@ function App() {
         hover, setHover,
         story, setStory
     ] = useGameState();
+    const [saveCycle, setSaveCycle] = useState(0);
+    const [justLoaded, setJustLoaded] = useState(1);
+    if (justLoaded) {
+        setJustLoaded(0);
+        loadGame(setResourceCount, setActionProgress, setStory, window);
+    }
     // Game loop
     const ms = 30; // milliseconds per interval.
     useInterval(()=> {
@@ -24,6 +30,11 @@ function App() {
             actionProgress, setActionProgress,
             story, setStory,
             ms);
+        const newSaveCycle = (saveCycle+1)%100;
+        setSaveCycle(newSaveCycle);
+        if (newSaveCycle == 0) {
+            gameSave(resourceCount, actionProgress, story, window);
+        }
     },ms);
     return (
         <div className="App">
@@ -31,6 +42,7 @@ function App() {
                 pane={pane} setPane={setPane}
                 resourceCount={resourceCount} setResourceCount={setResourceCount}
                 hover={hover} setHover={setHover}
+                setStory={setStory} setActionProgress={setActionProgress}
             />
             <ResourcePane
                 pane={pane}

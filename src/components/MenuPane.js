@@ -1,9 +1,18 @@
 import React, {useState} from 'react';
-import {StyledMenuPane, StyledPaneButton, StyledMenuHeader} from './styles/StyledMenuPane';
+import {StyledMenuPane, StyledPaneButton, StyledMenuHeader, StyledMenuGap, StyledResetButton, StyledGameInfo} from './styles/StyledMenuPane';
 import {resource_panes} from '../assets.js';
-import {useGameState} from '../state_hook.js';
+import {gameReset} from '../gameLogic.js';
 
-const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHover}) => {
+const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHover, setStory, setActionProgress}) => {
+    const [resetClicks, setResetClicks] = useState([1,1,1,1]);
+    const handleResetClick = () => {
+        let d = new Date();
+        let newResetClicks = [resetClicks[1],resetClicks[2],resetClicks[3],d.getTime()];
+        setResetClicks(newResetClicks);
+        if (newResetClicks[3] < newResetClicks[0] + 2000) {
+            gameReset(setResourceCount, setActionProgress, setStory, setHover);
+        }
+    }
     return (
         <StyledMenuPane>
             <StyledMenuHeader>
@@ -19,6 +28,17 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
                     {r[0]}
                 </StyledPaneButton>
             )}
+            <StyledMenuGap />
+            <StyledResetButton
+                onClick={handleResetClick}
+                onMouseOver={()=>setHover("Reset everything. Click four times quickly to make sure you really mean it.")}
+            >
+                Reset
+            </StyledResetButton>
+            <StyledMenuGap />
+            <StyledGameInfo>
+                Repair the Cosmos, by Michael Goff. Prepared January 31 to February 2, 2020, as part of <a href="https://globalgamejam.org/">Global Game Jam 2020</a>.
+            </StyledGameInfo>
         </StyledMenuPane>
     )
 }
