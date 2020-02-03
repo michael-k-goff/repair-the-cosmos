@@ -5,7 +5,7 @@ export const StyledMenuPane = styled.div`
     position:absolute;
     top:0;
     left:0;
-    height:100vh;
+    min-height:100vh;
     width:20vw;
 `
 
@@ -47,7 +47,12 @@ export const StyledMenuGap = styled.div`
     height:50px;
 `
 
+export const StyledMenuSmallGap = styled.div`
+    height:20px;
+`
+
 export const StyledGameInfo = styled.p`
     padding-left:10px;
     padding-right:10px;
+    padding-bottom:10px;
 `

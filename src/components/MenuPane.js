@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyledMenuPane, StyledPaneButton, StyledMenuHeader, StyledMenuGap, StyledResetButton, StyledGameInfo} from './styles/StyledMenuPane';
+import {StyledMenuPane, StyledPaneButton, StyledMenuHeader, StyledMenuGap, StyledMenuSmallGap, StyledResetButton, StyledGameInfo} from './styles/StyledMenuPane';
 import {resource_panes} from '../assets.js';
 import {gameReset} from '../gameLogic.js';
 
@@ -38,6 +38,10 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
             <StyledMenuGap />
             <StyledGameInfo>
                 Repair the Cosmos, by Michael Goff. Prepared January 31 to February 2, 2020, as part of <a href="https://globalgamejam.org/">Global Game Jam 2020</a>.
+            </StyledGameInfo>
+            <StyledMenuSmallGap />
+            <StyledGameInfo>
+                Thank you <a href="https://pigsquad.com/">Portland Indie Game Squad</a> for organizing and <a href="https://pnca.edu/">Pacific Northwest College of Art</a> for hosting.
             </StyledGameInfo>
         </StyledMenuPane>
     )
