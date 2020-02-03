@@ -3,6 +3,10 @@
 import {actionEffectWrapper, actions} from './assets.js';
 import {init_resource_count, init_story, init_hover} from './state_hook.js';
 
+export const speedMod = (actionProgress, add_one = 0) => {
+    return Math.pow(1/(Object.keys(actionProgress).length+add_one), 0.8);
+}
+
 export const updateActionProgress = (resourceCount, setResourceCount,
                     actionProgress, setActionProgress, story, setStory, ms) => {
     let newActionProgress = {};
@@ -12,7 +16,7 @@ export const updateActionProgress = (resourceCount, setResourceCount,
     }
     for (var key in actionProgress) {
         var prog = actionProgress[key];
-        var speed_mod = Math.pow(1/Object.keys(actionProgress).length, 0.8);
+        var speed_mod = speedMod(actionProgress);
         // Real version should start with 0.001 * ...
         prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](resourceCount);
         if (prog["timeLeft"] > 0) {

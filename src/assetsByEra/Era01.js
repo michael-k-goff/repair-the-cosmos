@@ -62,7 +62,7 @@ export const actions01 = [
         "canExecute":(rC) => {return rC["People"] > 9+rC["Scout"] * 2},
         "info":(rC)=>{
             let message = ["Train scouts to find more territory."]
-            if (rC["People"] <= 2+rC["Scout"] * 9) {
+            if (rC["People"] <= 9+rC["Scout"] * 2) {
                 message = message.concat(["You need more people."]);
             }
             return message;
@@ -78,7 +78,7 @@ export const actions01 = [
         "canExecute":(rC) => {return rC["People"] > 9+rC["Gatherer"] * 2},
         "info":(rC)=>{
             let message = ["Train gatherers to find more food."];
-            if (rC["People"] <= 2+rC["Gatherer"] * 9) {
+            if (rC["People"] <= 9+rC["Gatherer"] * 2) {
                 message = message.concat(["You need more people."]);
             }
             return message;

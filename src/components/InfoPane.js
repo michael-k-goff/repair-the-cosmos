@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyledInfoPane, StyledInfoGap} from './styles/StyledInfoPane';
+import {speedMod} from '../gameLogic';
 
 const InfoPane = ({hover, setHover, actionProgress, setActionProgress, resourceCount, setResourceCount}) => {
     let message1 =
@@ -7,6 +8,28 @@ const InfoPane = ({hover, setHover, actionProgress, setActionProgress, resourceC
             {hover}
         </p>
     if (hover.info) {
+        let time_left = 1/hover["speed"](resourceCount);
+        if (hover["name"] in actionProgress) {
+            time_left *= actionProgress[hover["name"]]["timeLeft"];
+        }
+        time_left /= speedMod(actionProgress, hover["name"] in actionProgress ? 0:1);
+        time_left = Math.round(time_left);
+        let time_left_string = "";
+        if (time_left >= 24*60*60) {
+            time_left_string += `${Math.floor(time_left/24*60*60)}d `;
+            time_left = time_left - 24*60*60*Math.floor(time_left/24*60*60);
+        }
+        if (time_left >= 60*60) {
+            time_left_string += `${Math.floor(time_left/60*60)}hr `;
+            time_left = time_left - 60*60*Math.floor(time_left/60*60);
+        }
+        if (time_left >= 60) {
+            time_left_string += `${Math.floor(time_left/60)}m `;
+            time_left = time_left - 60*Math.floor(time_left/60);
+        }
+        if (time_left >= 1) {
+            time_left_string += `${time_left}s `;
+        }
         message1 =
             <div>
                 {hover["info"](resourceCount).map((paragraph,i)=>
@@ -15,6 +38,11 @@ const InfoPane = ({hover, setHover, actionProgress, setActionProgress, resourceC
                         <StyledInfoGap key={i+10000}/>
                     </div>
                 )}
+                <p>
+                    Time left:&nbsp;
+                    {time_left_string}
+                </p>
+                <StyledInfoGap />
             </div>
     }
     let message2;
