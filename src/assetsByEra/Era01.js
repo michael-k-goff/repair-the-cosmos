@@ -36,7 +36,7 @@ export const actions01 = [
         "pane":"Population",
         "effect":(modified, setStory) => {
             modified["People"] += 1;
-            if (modified["People"]==10) {
+            if (modified["People"]===10) {
                 setStory(["Great work, your band is growing. Now it is time to specialize.","I suggest you train a scout so you can explore your surroundings."])
             }
         },
@@ -54,7 +54,7 @@ export const actions01 = [
         "pane":"Population",
         "effect":(modified, setStory) => {
             modified["Scout"] += 1;
-            if (modified["Scout"] == 1) {
+            if (modified["Scout"] === 1) {
                 setStory(["Now that you have a scout, head over to the Territory tab and explore your surroundings."])
             }
         },
@@ -151,7 +151,7 @@ export const actions01 = [
         "pane":"Territory",
         "effect":(modified, setStory) => {
             modified["Savannah"] += 1;
-            if (modified["Savannah"]==1) {
+            if (modified["Savannah"]===1) {
                 setStory(["You have discovered some open Savannah. Now you should head over to the Resources tab and start gathering some material. You are well on your way to repairing the cosmos."])
             }
         },

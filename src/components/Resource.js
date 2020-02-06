@@ -1,7 +1,6 @@
 // Component for a single resource display
 
-import React, {useState} from 'react';
-import {resources} from '../assets.js';
+import React from 'react';
 import {StyledResourceName, StyledResourceCount, StyledResourceBox} from './styles/StyledResourcePane';
 
 const Resource = ({resource, count, resourceCount, setResourceCount, hover, setHover}) => {

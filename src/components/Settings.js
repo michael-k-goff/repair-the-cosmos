@@ -5,14 +5,14 @@ import {StyledGameInfo, StyledResetButton} from './styles/StyledSettings';
 import {StyledMenuGap} from './styles/StyledMenuPane'
 import {gameReset} from '../gameLogic.js';
 
-const Settings = ({setResourceCount, setActionProgress, setStory, setHover}) => {
+const Settings = ({setResourceCount, setActionProgress, setStory, setHover, more}) => {
     const [resetClicks, setResetClicks] = useState([1,1,1,1]);
     const handleResetClick = () => {
         let d = new Date();
         let newResetClicks = [resetClicks[1],resetClicks[2],resetClicks[3],d.getTime()];
         setResetClicks(newResetClicks);
         if (newResetClicks[3] < newResetClicks[0] + 2000) {
-            gameReset(setResourceCount, setActionProgress, setStory, setHover);
+            gameReset(setResourceCount, setActionProgress, setStory, setHover, more);
         }
     }
     return (

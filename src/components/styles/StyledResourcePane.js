@@ -20,16 +20,9 @@ export const StyledResourceHeader = styled.div`
 export const StyledActionButton = styled.button`
     font-size: 16px;
     width: 25%;
-    color: ${props => props.enabled ? "#000000" : "#777777"};
-    background-color: ${props => props.enabled ? "#00BA8C" : "#77DABC"};
     border: 1px solid black;
     border-radius: 5px;
-    -webkit-transition-duration: 0.2s; /* Safari */
-    transition-duration: 0.2s;
-    &:hover {
-        background-color: #e7e7e7;
-    }
-`;
+`
 
 export const StyledCancelButton = styled.button`
     font-size: 16px;

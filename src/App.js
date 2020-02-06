@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import MenuPane from './components/MenuPane';
 import ResourcePane from './components/ResourcePane';
@@ -14,13 +13,14 @@ function App() {
         resourceCount, setResourceCount,
         actionProgress, setActionProgress,
         hover, setHover,
-        story, setStory
+        story, setStory,
+        more
     ] = useGameState();
     const [saveCycle, setSaveCycle] = useState(0);
     const [justLoaded, setJustLoaded] = useState(1);
     if (justLoaded) {
         setJustLoaded(0);
-        loadGame(setResourceCount, setActionProgress, setStory, window);
+        loadGame(setResourceCount, setActionProgress, setStory, more, window);
     }
     // Game loop
     const ms = 30; // milliseconds per interval.
@@ -28,12 +28,12 @@ function App() {
         updateActionProgress(
             resourceCount, setResourceCount,
             actionProgress, setActionProgress,
-            story, setStory,
+            story, setStory, more,
             ms);
-        const newSaveCycle = (saveCycle+1)%100;
+        const newSaveCycle = (saveCycle+1)%10;
         setSaveCycle(newSaveCycle);
-        if (newSaveCycle == 0) {
-            gameSave(resourceCount, actionProgress, story, window);
+        if (newSaveCycle === 0) {
+            gameSave(resourceCount, actionProgress, story, more, window);
         }
     },ms);
     return (
@@ -48,7 +48,7 @@ function App() {
                 pane={pane}
                 resourceCount={resourceCount} setResourceCount={setResourceCount}
                 actionProgress={actionProgress} setActionProgress={setActionProgress}
-                hover={hover} setHover={setHover} setStory={setStory}
+                hover={hover} setHover={setHover} setStory={setStory} more={more}
             />
             <StoryPane story={story} setStory={setStory} />
             <InfoPane hover={hover} setHover={setHover}

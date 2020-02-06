@@ -1,20 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {StyledMenuPane, StyledPaneButton, StyledMenuHeader,
-    StyledMenuGap, StyledMenuSmallGap, StyledGameInfo, StyledSettingsButton
+    StyledMenuGap, StyledSettingsButton
 } from './styles/StyledMenuPane';
 import {resource_panes, resources_by_pane, actions_by_pane} from '../assets.js';
-import {gameReset} from '../gameLogic.js';
 
 const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHover, setStory, setActionProgress}) => {
-    const [resetClicks, setResetClicks] = useState([1,1,1,1]);
-    const handleResetClick = () => {
-        let d = new Date();
-        let newResetClicks = [resetClicks[1],resetClicks[2],resetClicks[3],d.getTime()];
-        setResetClicks(newResetClicks);
-        if (newResetClicks[3] < newResetClicks[0] + 2000) {
-            gameReset(setResourceCount, setActionProgress, setStory, setHover);
-        }
-    }
     return (
         <StyledMenuPane>
             <StyledMenuHeader>
@@ -27,7 +17,7 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
                         return true;
                     }
                 }
-                for (var i=0; i<actions_by_pane[r[0]].length; i++) {
+                for (i=0; i<actions_by_pane[r[0]].length; i++) {
                     let a = actions_by_pane[r[0]][i];
                     if ("visible" in a ? a["visible"](resourceCount) : a["canExecute"](resourceCount)) {
                         return true;

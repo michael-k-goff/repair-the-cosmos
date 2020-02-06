@@ -37,10 +37,14 @@ export const useGameState = () => {
     // Current story
     const [story, setStory] = useState(init_story)
 
+    // Counts of how many times each action is performed
+    const [actionCount, setActionCount] = useState({});
+
     return [pane, setPane,
         resourceCount, setResourceCount,
         actionProgress, setActionProgress,
         hover, setHover,
-        story, setStory
+        story, setStory,
+        {"actionCount":actionCount, "setActionCount":setActionCount}
     ];
 }

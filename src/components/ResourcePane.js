@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyledResourcePane, StyledResourceHeader, StyledResourcePaneDivider} from './styles/StyledResourcePane';
-import {resources, actions, resources_by_pane, actions_by_pane} from '../assets.js';
+import {resources_by_pane, actions_by_pane} from '../assets.js';
 import Resource from './Resource.js';
 import Action from './Action.js';
 import Settings from './Settings.js';
@@ -8,7 +8,7 @@ import Settings from './Settings.js';
 const RandADisplay = ({pane,
                 resourceCount, setResourceCount,
                 actionProgress, setActionProgress,
-                hover, setHover
+                hover, setHover, more
 }) => {
     const display_resources_by_pane = resources_by_pane[pane].filter((r) => {
         return resourceCount[r[0]];
@@ -17,12 +17,12 @@ const RandADisplay = ({pane,
         return "visible" in a ? a["visible"](resourceCount) : a["canExecute"](resourceCount);
     })
     return (
-        <fragment>
+        <div>
             {display_actions_by_pane.map((a) =>
                 <Action action={a} key={"action_"+a["name"]}
                     resourceCount={resourceCount} setResourceCount={setResourceCount}
                     actionProgress={actionProgress} setActionProgress={setActionProgress}
-                    hover={hover} setHover={setHover}
+                    hover={hover} setHover={setHover} more={more}
                 />
             )}
 
@@ -35,14 +35,14 @@ const RandADisplay = ({pane,
                     hover={hover} setHover={setHover}
                     key={"resource_"+r[0]} />
             )}
-        </fragment>
+        </div>
     )
 }
 
 const ResourcePane = ({pane,
                 resourceCount, setResourceCount,
                 actionProgress, setActionProgress,
-                hover, setHover, setStory
+                hover, setHover, setStory, more
 }) => {
     return (
         <StyledResourcePane>
@@ -55,7 +55,7 @@ const ResourcePane = ({pane,
                         pane={pane}
                         resourceCount={resourceCount} setResourceCount={setResourceCount}
                         actionProgress={actionProgress} setActionProgress={setActionProgress}
-                        hover={hover} setHover={setHover}
+                        hover={hover} setHover={setHover} more={more}
                     />
                 }
             })()}
@@ -65,7 +65,7 @@ const ResourcePane = ({pane,
                         pane={pane}
                         resourceCount={resourceCount} setResourceCount={setResourceCount}
                         actionProgress={actionProgress} setActionProgress={setActionProgress}
-                        hover={hover} setHover={setHover} setStory={setStory}
+                        hover={hover} setHover={setHover} setStory={setStory} more={more}
                     />
                 }
             })()}
