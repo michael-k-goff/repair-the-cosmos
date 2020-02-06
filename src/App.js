@@ -48,7 +48,7 @@ function App() {
                 pane={pane}
                 resourceCount={resourceCount} setResourceCount={setResourceCount}
                 actionProgress={actionProgress} setActionProgress={setActionProgress}
-                hover={hover} setHover={setHover}
+                hover={hover} setHover={setHover} setStory={setStory}
             />
             <StoryPane story={story} setStory={setStory} />
             <InfoPane hover={hover} setHover={setHover}

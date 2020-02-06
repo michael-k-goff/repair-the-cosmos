@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
-import {StyledMenuPane, StyledPaneButton, StyledMenuHeader, StyledMenuGap, StyledMenuSmallGap, StyledResetButton, StyledGameInfo} from './styles/StyledMenuPane';
-import {resource_panes} from '../assets.js';
+import {StyledMenuPane, StyledPaneButton, StyledMenuHeader,
+    StyledMenuGap, StyledMenuSmallGap, StyledGameInfo, StyledSettingsButton
+} from './styles/StyledMenuPane';
+import {resource_panes, resources_by_pane, actions_by_pane} from '../assets.js';
 import {gameReset} from '../gameLogic.js';
 
 const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHover, setStory, setActionProgress}) => {
@@ -18,7 +20,21 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
             <StyledMenuHeader>
                 Repair the Cosmos
             </StyledMenuHeader>
-            {resource_panes.map((r,x) =>
+            {resource_panes.filter(r=>{
+                for (var i=0; i<resources_by_pane[r[0]].length; i++) {
+                    let res = resources_by_pane[r[0]][i][0];
+                    if (res in resourceCount && resourceCount[res]) {
+                        return true;
+                    }
+                }
+                for (var i=0; i<actions_by_pane[r[0]].length; i++) {
+                    let a = actions_by_pane[r[0]][i];
+                    if ("visible" in a ? a["visible"](resourceCount) : a["canExecute"](resourceCount)) {
+                        return true;
+                    }
+                }
+                return false;
+            }).map((r,x) =>
                 <StyledPaneButton
                     current_pane={r[0]===pane}
                     key={x}
@@ -29,20 +45,12 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
                 </StyledPaneButton>
             )}
             <StyledMenuGap />
-            <StyledResetButton
-                onClick={handleResetClick}
-                onMouseOver={()=>setHover("Reset everything. Click four times quickly to make sure you really mean it.")}
+            <StyledSettingsButton
+                onClick={()=>setPane("Settings")}
+                onMouseOver={()=>setHover("See general game info and settings.")}
             >
-                Reset
-            </StyledResetButton>
-            <StyledMenuGap />
-            <StyledGameInfo>
-                Repair the Cosmos, by Michael Goff. Prepared January 31 to February 2, 2020, as part of <a href="https://globalgamejam.org/">Global Game Jam 2020</a>.
-            </StyledGameInfo>
-            <StyledMenuSmallGap />
-            <StyledGameInfo>
-                Thank you <a href="https://pigsquad.com/">Portland Indie Game Squad</a> for organizing and <a href="https://pnca.edu/">Pacific Northwest College of Art</a> for hosting.
-            </StyledGameInfo>
+                Info & Settings
+            </StyledSettingsButton>
         </StyledMenuPane>
     )
 }

@@ -8,27 +8,31 @@ const InfoPane = ({hover, setHover, actionProgress, setActionProgress, resourceC
             {hover}
         </p>
     if (hover.info) {
-        let time_left = 1/hover["speed"](resourceCount);
-        if (hover["name"] in actionProgress) {
-            time_left *= actionProgress[hover["name"]]["timeLeft"];
-        }
-        time_left /= speedMod(actionProgress, hover["name"] in actionProgress ? 0:1);
-        time_left = Math.round(time_left);
+        const base_speed = hover["speed"](resourceCount);
         let time_left_string = "";
-        if (time_left >= 24*60*60) {
-            time_left_string += `${Math.floor(time_left/24*60*60)}d `;
-            time_left = time_left - 24*60*60*Math.floor(time_left/24*60*60);
-        }
-        if (time_left >= 60*60) {
-            time_left_string += `${Math.floor(time_left/60*60)}hr `;
-            time_left = time_left - 60*60*Math.floor(time_left/60*60);
-        }
-        if (time_left >= 60) {
-            time_left_string += `${Math.floor(time_left/60)}m `;
-            time_left = time_left - 60*Math.floor(time_left/60);
-        }
-        if (time_left >= 1) {
-            time_left_string += `${time_left}s `;
+        if (base_speed > 0) {
+            let time_left = 1/base_speed;
+            if (hover["name"] in actionProgress) {
+                time_left *= actionProgress[hover["name"]]["timeLeft"];
+            }
+            time_left /= speedMod(actionProgress, hover["name"] in actionProgress ? 0:1);
+            time_left = Math.round(time_left);
+            time_left_string = time_left ? "" : "0s ";
+            if (time_left >= 24*60*60) {
+                time_left_string += `${Math.floor(time_left/24*60*60)}d `;
+                time_left = time_left - 24*60*60*Math.floor(time_left/24*60*60);
+            }
+            if (time_left >= 60*60) {
+                time_left_string += `${Math.floor(time_left/60*60)}hr `;
+                time_left = time_left - 60*60*Math.floor(time_left/60*60);
+            }
+            if (time_left >= 60) {
+                time_left_string += `${Math.floor(time_left/60)}m `;
+                time_left = time_left - 60*Math.floor(time_left/60);
+            }
+            if (time_left >= 1) {
+                time_left_string += `${time_left}s `;
+            }
         }
         message1 =
             <div>
@@ -38,11 +42,12 @@ const InfoPane = ({hover, setHover, actionProgress, setActionProgress, resourceC
                         <StyledInfoGap key={i+10000}/>
                     </div>
                 )}
-                <p>
-                    Time left:&nbsp;
-                    {time_left_string}
-                </p>
+                {(()=>{
+                    if (base_speed) {return <p>Time left:&nbsp;{time_left_string}</p>}
+                    }
+                )()}
                 <StyledInfoGap />
+
             </div>
     }
     let message2;

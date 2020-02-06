@@ -23,11 +23,11 @@ export const StyledPaneButton = styled.button`
     }
 `;
 
-export const StyledResetButton = styled.button`
+export const StyledSettingsButton = styled.button`
     font-size: 24px;
     display: block;
     width: 100%;
-    background-color: ${props => props.current_pane ? "#BA8C00" : "#BA0000"};
+    background-color: ${props => props.current_pane ? "#AAAAAA" : "#AAAAAA"};
     border: 1px solid black;
     border-radius: 8px;
     -webkit-transition-duration: 0.2s; /* Safari */
@@ -49,10 +49,4 @@ export const StyledMenuGap = styled.div`
 
 export const StyledMenuSmallGap = styled.div`
     height:20px;
-`
-
-export const StyledGameInfo = styled.p`
-    padding-left:10px;
-    padding-right:10px;
-    padding-bottom:10px;
 `

@@ -21,7 +21,7 @@ export const StyledActionButton = styled.button`
     font-size: 16px;
     width: 25%;
     color: ${props => props.enabled ? "#000000" : "#777777"};
-    background-color: #00BA8C;
+    background-color: ${props => props.enabled ? "#00BA8C" : "#77DABC"};
     border: 1px solid black;
     border-radius: 5px;
     -webkit-transition-duration: 0.2s; /* Safari */

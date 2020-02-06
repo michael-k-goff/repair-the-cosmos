@@ -45,7 +45,7 @@ export const actions01 = [
         },
         "canExecute":(rC) => {return 1},
         "info":(rC)=>{
-            let message = ["Grow your population. More food and shelter helps you grow faster."];
+            let message = ["Grow your population. Faster with more food."];
             return message;
         }
     },
@@ -60,8 +60,9 @@ export const actions01 = [
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Scout"])},
         "canExecute":(rC) => {return rC["People"] > 9+rC["Scout"] * 2},
+        "visible":(rC) => rC["People"] >= 10,
         "info":(rC)=>{
-            let message = ["Train scouts to find more territory."]
+            let message = ["Train scouts to find more territory. Faster with more People."]
             if (rC["People"] <= 9+rC["Scout"] * 2) {
                 message = message.concat(["You need more people."]);
             }
@@ -76,8 +77,9 @@ export const actions01 = [
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Gatherer"])},
         "canExecute":(rC) => {return rC["People"] > 9+rC["Gatherer"] * 2},
+        "visible":(rC) => rC["People"] >= 10,
         "info":(rC)=>{
-            let message = ["Train gatherers to find more food."];
+            let message = ["Train gatherers to find more food. Faster with more People."];
             if (rC["People"] <= 9+rC["Gatherer"] * 2) {
                 message = message.concat(["You need more people."]);
             }
@@ -92,10 +94,14 @@ export const actions01 = [
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Wood"],0.25)/(1+rC["Wood Worker"])},
         "canExecute":(rC) => {return rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] > 2+rC["Wood Worker"] * 2},
+        "visible":(rC) => rC["Wood"] >= 1,
         "info":(rC)=>{
-            let message = ["Train wood workers to fashion wooden tools."];
+            let message = ["Train wood workers to fashion wooden tools. Faster with more People, Wood."];
             if (rC["People"] <= 10+rC["Wood Worker"] * 4) {
                 message = message.concat(["You need more people."]);
+            }
+            if (rC["Wood"] <= 2+rC["Wood Worker"] * 2) {
+                message = message.concat(["You need more Wood."]);
             }
             return message;
         }
@@ -108,10 +114,14 @@ export const actions01 = [
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Rocks"],0.25)/(1+rC["Stone Worker"])},
         "canExecute":(rC) => {return rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] > 2+rC["Stone Worker"] * 2},
+        "visible":(rC) => rC["Rocks"] >= 1,
         "info":(rC)=>{
-            let message = ["Train stone workers to create and maintain stone tools."];
+            let message = ["Train stone workers to create and maintain stone tools. Faster with more People, Rocks."];
             if (rC["People"] <= 10+rC["Stone Worker"] * 4) {
                 message = message.concat(["You need more people."]);
+            }
+            if (rC["Rocks"] <= 2+rC["Stone Worker"] * 2) {
+                message = message.concat(["You need more Rocks."]);
             }
             return message;
         }
@@ -124,8 +134,15 @@ export const actions01 = [
         },
         "speed":(rC) => {return 0.05*Math.pow( rC["Gatherer"]*(rC["Wood Worker"]+rC["Stone Worker"]) , 0.25)/(1+rC["Hunter"])},
         "canExecute":(rC) => {return rC["Gatherer"] > 2+rC["Hunter"] * 2 && rC["Wood Worker"]+rC["Stone Worker"]>rC["Hunter"]},
+        "visible":(rC)=>rC["Wood Worker"] || rC["Stone Worker"],
         "info":(rC)=>{
-            let message = ["Train hunter."];
+            let message = ["Train hunter. Faster with more Gatherers, Wood Workers, Stone Workers."];
+            if (rC["Gatherer"] <= 2+rC["Hunter"] * 2) {
+                message = message.concat(["You need more Gatherers."]);
+            }
+            if (rC["Wood Worker"]+rC["Stone Worker"]<=rC["Hunter"]) {
+                message = message.concat(["You need more Wood Workers or Stone Workers."]);
+            }
             return message;
         }
     },
@@ -140,7 +157,7 @@ export const actions01 = [
         },
         "speed":(rC) => {return 0.2*Math.sqrt(rC["Scout"])/(1+rC["Savannah"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Savannah to settle. Train more Scouts to search faster."]
+        "info":(rc) => ["Search for Savannah to settle. Train more Scouts to search faster. Faster with more Scouts."]
     },
     {
         "name":"Explore Forest",
@@ -148,7 +165,7 @@ export const actions01 = [
         "effect":(modified) => modified["Forest"] += 1,
         "speed":(rC) => {return 0.1*Math.sqrt(rC["Scout"])/(1+rC["Forest"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Forest to settle. Train more Scouts to search faster."]
+        "info":(rc) => ["Search for Forest to settle. Train more Scouts to search faster. Faster with more Scouts."]
     },
     {
         "name":"Explore Hills",
@@ -156,7 +173,7 @@ export const actions01 = [
         "effect":(modified) => modified["Hills"] += 1,
         "speed":(rC) => {return 0.1*Math.sqrt(rC["Scout"])/(1+rC["Hills"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Hills to settle. Train more Scouts to search faster."]
+        "info":(rc) => ["Search for Hills to settle. Train more Scouts to search faster. Faster with more Scouts."]
     },
     {
         "name":"Explore Valley",
@@ -164,7 +181,7 @@ export const actions01 = [
         "effect":(modified) => modified["Valley"] += 1,
         "speed":(rC) => {return 0.07*Math.sqrt(rC["Scout"])/(1+rC["Valley"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for a valley to settle. Train more Scouts to search faster."]
+        "info":(rc) => ["Search for a valley to settle. Train more Scouts to search faster. Faster with more Scouts."]
     },
     {
         "name":"Explore River",
@@ -172,7 +189,7 @@ export const actions01 = [
         "effect":(modified) => modified["River"] += 1,
         "speed":(rC) => {return 0.07*Math.sqrt(rC["Scout"])/(1+rC["River"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Savannah to settle. Train more Scouts to search faster. A good place to park a van."]
+        "info":(rc) => ["Search for Savannah to settle. Train more Scouts to search faster. A good place to park a van. Faster with more Scouts."]
     },
     {
         "name":"Explore Cave",
@@ -180,15 +197,22 @@ export const actions01 = [
         "effect":(modified) => modified["Cave"] += 1,
         "speed":(rC) => {return 0.05*Math.sqrt(rC["Scout"])/(1+rC["Cave"])},
         "canExecute":(rc) => rc["Hills"],
-        "info":(rc) => ["You might find a cave in the side of a hill."]
+        "info":(rc) => ["You might find a cave in the side of a hill. Faster with more Scouts."]
     },
     {
         "name":"Gather Mushrooms",
         "pane":"Resources",
         "effect":(modified) => modified["Wild Mushrooms"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wild Mushrooms"])},
-        "canExecute":(rc) => rc["Gatherer"] && rc["Forest"],
-        "info":(rc) => ["It took a long time to learn which ones are edible."]
+        "canExecute":(rC) => rC["Gatherer"] && rC["Forest"],
+        "visible":(rC) => rC["Forest"],
+        "info":(rC)=>{
+            let message = ["It took a long time to learn which ones are edible. Faster with more Gatherers, Forest."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Harvest Carrion",
@@ -196,7 +220,14 @@ export const actions01 = [
         "effect":(modified) => modified["Carrion"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Carrion"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
-        "info":(rc) => ["Watch out for the hyenas."]
+        "visible":(rC) => rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Watch out for the hyenas. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Gather Grains",
@@ -204,7 +235,14 @@ export const actions01 = [
         "effect":(modified) => modified["Wild Grains"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Wild Grains"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
-        "info":(rc) => ["Foraging for grains."]
+        "visible":(rC) => rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Foraging for wild grains. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Gather Fruit",
@@ -212,7 +250,14 @@ export const actions01 = [
         "effect":(modified) => modified["Wild Fruit"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Wild Fruit"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
-        "info":(rc) => ["Looking for wild fruit."]
+        "visible":(rC) => rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Looking for wild fruit. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Gather Wood",
@@ -220,7 +265,14 @@ export const actions01 = [
         "effect":(modified) => modified["Wood"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wood"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Forest"],
-        "info":(rc) => ["It's called the Stone Age, but wood was more widely used. It should be called the Wood Age."]
+        "visible":(rC) => rC["Forest"],
+        "info":(rC)=>{
+            let message = ["It's called the Stone Age, but wood was more widely used. It should be called the Wood Age. Faster with more Gatherers, Forest."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Gather Rocks",
@@ -228,15 +280,32 @@ export const actions01 = [
         "effect":(modified) => modified["Rocks"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Rocks"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
-        "info":(rc) => ["Gathering rocks is boring, but they might be useful."]
+        "visible":(rC) => rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Gathering rocks is boring, but they might be useful. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Build Campsite",
         "pane":"Buildings",
         "effect":(modified) => modified["Campsite"] += 1,
         "speed":(rC) => {return 0.02*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Campsite"])},
-        "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"] && rc["People"]>10,
-        "info":(rc) => ["Make camp here."]
+        "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"] && rc["People"]>15,
+        "visible":(rC) => rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Make camp here. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            if (rC["People"] <= 15) {
+                message = message.concat(["You need more people."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Build Fire Pit",
@@ -244,7 +313,14 @@ export const actions01 = [
         "effect":(modified) => modified["Fire Pit"] += 1,
         "speed":(rC) => {return 0.03*Math.pow(rC["Wood"]*rC["Campsite"], 0.25)/(1+rC["Fire Pit"])},
         "canExecute":(rc) => rc["Wood"] && rc["Campsite"],
-        "info":(rc) => ["It took early humans hundreds of thousands of years to figure out how to control fire. It took you a few minutes."]
+        "visible":(rC) => rC["Campsite"],
+        "info":(rC)=>{
+            let message = ["It took early humans hundreds of thousands of years to figure out how to control fire. It took you a few minutes. Faster with more Wood, Campsite."];
+            if (!rC["Wood"]) {
+                message = message.concat(["You need some Wood."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Build Grain Storage",
@@ -252,7 +328,17 @@ export const actions01 = [
         "effect":(modified) => modified["Grain Storage"] += 1,
         "speed":(rC) => {return 0.1*Math.pow(rC["Wild Grains"]*rC["Cave"], 0.25)/(1+rC["Grain Storage"])},
         "canExecute":(rc) => rc["Wild Grains"] && rc["Cave"],
-        "info":(rc) => ["Storing grain increase its effectiveness in feeding the population."]
+        "visible":(rC) => rC["Wild Grains"] || rC["Cave"],
+        "info":(rC)=>{
+            let message = ["Storing grain increase its effectiveness in feeding the population. Faster with more Wild Grains, Caves."];
+            if (!rC["Wild Grains"]) {
+                message = message.concat(["You need some Wild Grains to store."]);
+            }
+            if (!rC["Cave"]) {
+                message = message.concat(["You need a Cave."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Form a Tribe",
@@ -262,7 +348,14 @@ export const actions01 = [
             setStory(["Your band has grown into a full-fledged tribe. This is the end of the current demo. Thanks for playing, and please check back later.","You can continue building your population and resources if you so desire."]);
         },
         "speed":(rC) => {return 0.001*Math.pow(rC["People"]*(rC["Valley"]+rC["River"])*(rC["Fire Pit"]+rC["Grain Storage"]), 1/6)/(1+rC["Tribe"])},
-        "canExecute":(rc) => rc["Gatherer"] && rc["Valley"] && rc["River"] && rc["Fire Pit"] && rc["Grain Storage"],
-        "info":(rc) => ["Turn your band into an organized tribe. You need a lot of people."]
+        "canExecute":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"] && rC["People"]>=50,
+        "visible":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"],
+        "info":(rC)=>{
+            let message = ["Turn your band into an organized tribe. You need a lot of people. Faster with more People, Valley, River, Fire Pit, Grain Storage."];
+            if (rC["People"] < 50) {
+                message = message.concat(["You need more People."]);
+            }
+            return message;
+        }
     }
 ]
