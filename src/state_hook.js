@@ -40,11 +40,17 @@ export const useGameState = () => {
     // Counts of how many times each action is performed
     const [actionCount, setActionCount] = useState({});
 
+    // Staging area for actions done by click.
+    const [staging, setStaging] = useState({})
+
     return [pane, setPane,
         resourceCount, setResourceCount,
         actionProgress, setActionProgress,
         hover, setHover,
         story, setStory,
-        {"actionCount":actionCount, "setActionCount":setActionCount}
+        {
+            "actionCount":actionCount, "setActionCount":setActionCount,
+            "staging":staging, "setStaging":setStaging
+        }
     ];
 }

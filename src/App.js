@@ -42,7 +42,9 @@ function App() {
                 pane={pane} setPane={setPane}
                 resourceCount={resourceCount} setResourceCount={setResourceCount}
                 hover={hover} setHover={setHover}
-                setStory={setStory} setActionProgress={setActionProgress}
+                setStory={setStory}
+                actionProgress={actionProgress} setActionProgress={setActionProgress}
+                more={more}
             />
             <ResourcePane
                 pane={pane}
@@ -54,6 +56,7 @@ function App() {
             <InfoPane hover={hover} setHover={setHover}
                 actionProgress={actionProgress} setActionProgress={setActionProgress}
                 resourceCount={resourceCount} setResourceCount={setResourceCount}
+                more={more}
             />
         </div>
     );

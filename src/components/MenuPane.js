@@ -1,10 +1,11 @@
 import React from 'react';
+import ActionSummary from './ActionSummary';
 import {StyledMenuPane, StyledPaneButton, StyledMenuHeader,
     StyledMenuGap, StyledSettingsButton
 } from './styles/StyledMenuPane';
 import {resource_panes, resources_by_pane, actions_by_pane} from '../assets.js';
 
-const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHover, setStory, setActionProgress}) => {
+const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHover, setStory, actionProgress, setActionProgress, more}) => {
     return (
         <StyledMenuPane>
             <StyledMenuHeader>
@@ -41,6 +42,10 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
             >
                 Info & Settings
             </StyledSettingsButton>
+            <ActionSummary
+                resourceCount = {resourceCount}
+                actionProgress={actionProgress}
+            />
         </StyledMenuPane>
     )
 }

@@ -7,6 +7,36 @@ export const speedMod = (actionProgress, add_one = 0) => {
     return Math.pow(1/(Object.keys(actionProgress).length+add_one), 0.8);
 }
 
+export const timeLeft = (actionProgress, resourceCount, action) => {
+    const base_speed = action["speed"](resourceCount);
+    if (base_speed <= 0) {
+        return -1; // Dummy return
+    }
+    let timeLeft = 1/base_speed * ( (action["name"] in actionProgress) ? actionProgress[action["name"]]["timeLeft"] : 1 );
+    return timeLeft / speedMod(actionProgress, (action["name"] in actionProgress)?0:1);
+}
+
+export const timeLeftString = (time_left) => {
+    time_left = Math.round(time_left);
+    let time_left_string = time_left ? "" : "0s ";
+    if (time_left >= 24*60*60) {
+        time_left_string += `${Math.floor(time_left/24*60*60)}d `;
+        time_left = time_left - 24*60*60*Math.floor(time_left/24*60*60);
+    }
+    if (time_left >= 60*60) {
+        time_left_string += `${Math.floor(time_left/60*60)}hr `;
+        time_left = time_left - 60*60*Math.floor(time_left/60*60);
+    }
+    if (time_left >= 60) {
+        time_left_string += `${Math.floor(time_left/60)}m `;
+        time_left = time_left - 60*Math.floor(time_left/60);
+    }
+    if (time_left >= 1) {
+        time_left_string += `${time_left}s `;
+    }
+    return time_left_string;
+}
+
 export const updateActionProgress = (resourceCount, setResourceCount,
                     actionProgress, setActionProgress, story, setStory, more, ms) => {
     let newActionProgress = {};
@@ -18,35 +48,43 @@ export const updateActionProgress = (resourceCount, setResourceCount,
     for (key in more["actionCount"]) {
         modCount[key] = more["actionCount"][key];
     }
-    for (key in actionProgress) {
-        var prog = actionProgress[key];
-        var speed_mod = speedMod(actionProgress);
-        // Real version should start with 0.001 * ...
-        prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](resourceCount);
-        if (prog["timeLeft"] > 0) {
-            newActionProgress[key] = prog;
+    // Handle button presses via staging
+    if (more["staging"]["action"]) {
+        if (more["staging"]["operation"]=="One") {
+            newActionProgress[more["staging"]["action"]["name"]] = {"timeLeft":1, "action":more["staging"]["action"]}
         }
-        else {
-            modified = actionEffectWrapper(modified, setResourceCount, setStory, prog["action"], modCount)();
-            if (prog["repeat"] && prog["action"]["canExecute"](modified)) {
-                prog["timeLeft"] = 1;
+        if (more["staging"]["operation"]=="Repeat") {
+            newActionProgress[more["staging"]["action"]["name"]] = {
+                "timeLeft":1,
+                "action":more["staging"]["action"],
+                "repeat":1
+            }
+        }
+    }
+    // Update all actions in progress
+    for (key in actionProgress) {
+        // This if statement cancels actions staged by be canceled by simply skipping over their copying.
+        if (!more["staging"]["action"] || more["staging"]["operation"] !== "Cancel" || more["staging"]["action"]["name"] !== key) {
+            var prog = actionProgress[key];
+            var speed_mod = speedMod(actionProgress);
+            // Real version should start with 0.001 * ...
+            prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](resourceCount);
+            if (prog["timeLeft"] > 0) {
                 newActionProgress[key] = prog;
+            }
+            else {
+                modified = actionEffectWrapper(modified, setResourceCount, setStory, prog["action"], modCount)();
+                if (prog["repeat"] && prog["action"]["canExecute"](modified)) {
+                    prog["timeLeft"] = 1;
+                    newActionProgress[key] = prog;
+                }
             }
         }
     }
     setResourceCount(modified);
     setActionProgress(newActionProgress);
     more["setActionCount"](modCount);
-}
-
-export const cancelActionProgress = (name, actionProgress, setActionProgress) => {
-    let newActionProgress = {};
-    for (var key in actionProgress) {
-        if (key !== name) {
-            newActionProgress[key] = actionProgress[key];
-        }
-    }
-    setActionProgress(newActionProgress);
+    more["setStaging"]({});
 }
 
 export const gameReset = (setResourceCount, setActionProgress, setStory, setHover, more) => {

@@ -2,7 +2,6 @@
 
 import React, {useState} from 'react';
 import {StyledActionButton, StyledActionProgress, StyledCancelButton} from './styles/StyledResourcePane';
-import {cancelActionProgress} from '../gameLogic.js';
 
 const progress_to_pct = (prog) => {
     const pct = (100-100*prog["timeLeft"])
@@ -25,26 +24,20 @@ const Action = ({action,
         if (!action["canExecute"](resourceCount) || action["name"] in actionProgress) {
             return;
         }
-        let newActionProgress = {}
-        for (var key in actionProgress) {
-            newActionProgress[key] = actionProgress[key]
-        }
-        newActionProgress[action["name"]] = {"timeLeft":1, "action":action};
-        setActionProgress(newActionProgress);
+        // Now setting the new action via staging rather than directly
+        more["setStaging"]({"action":action,"operation":"One"});
     }
     const handleClickRepeat = () => {
         if (!action["canExecute"](resourceCount)) {
             return;
         }
-        let newActionProgress = {}
-        for (var key in actionProgress) {
-            newActionProgress[key] = actionProgress[key]
-        }
-        newActionProgress[action["name"]] = {"timeLeft":1, "action":action,"repeat":1};
-        setActionProgress(newActionProgress);
+        // Now setting the new action via staging rather than directly
+        more["setStaging"]({"action":action,"operation":"Repeat"});
+        setRepeatHover(0);
     }
     const handleCancelClick = () => {
-        cancelActionProgress(action["name"],actionProgress, setActionProgress);
+        // Now canceling via staging
+        more["setStaging"]({"action":action,"operation":"Cancel"});
     }
     const enabled = action["canExecute"](resourceCount) && !(action["name"] in actionProgress);
     const count = more["actionCount"][action["name"]];
