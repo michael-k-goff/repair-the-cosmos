@@ -62,21 +62,30 @@ export const updateActionProgress = (resourceCount, setResourceCount,
         }
     }
     // Update all actions in progress
-    for (key in actionProgress) {
-        // This if statement cancels actions staged by be canceled by simply skipping over their copying.
-        if (!more["staging"]["action"] || more["staging"]["operation"] !== "Cancel" || more["staging"]["action"]["name"] !== key) {
-            var prog = actionProgress[key];
-            var speed_mod = speedMod(actionProgress);
-            // Real version should start with 0.001 * ...
-            prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](resourceCount);
-            if (prog["timeLeft"] > 0) {
-                newActionProgress[key] = prog;
-            }
-            else {
-                modified = actionEffectWrapper(modified, setResourceCount, setStory, prog["action"], modCount)();
-                if (prog["repeat"] && prog["action"]["canExecute"](modified)) {
-                    prog["timeLeft"] = 1;
+    if (!more["staging"]["operation"] || more["staging"]["operation"] !== "CancelALL") {
+        for (key in actionProgress) {
+            // This if statement cancels actions staged by be canceled by simply skipping over their copying.
+            if (!more["staging"]["action"] || more["staging"]["operation"] !== "Cancel" || more["staging"]["action"]["name"] !== key) {
+                var prog = actionProgress[key];
+                // Check to cancel repeats
+                if (more["staging"]["operation"] && more["staging"]["operation"]==="CancelRepeat") {
+                    prog["repeat"] = 0;
+                }
+                if (more["staging"]["operation"] && more["staging"]["operation"]==="RepeatToggle" && more["staging"]["action"]["name"] === key) {
+                    prog["repeat"] = prog["repeat"]?0:1;
+                }
+                var speed_mod = speedMod(actionProgress);
+                // Real version should start with 0.001 * ...
+                prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](resourceCount);
+                if (prog["timeLeft"] > 0) {
                     newActionProgress[key] = prog;
+                }
+                else {
+                    modified = actionEffectWrapper(modified, setResourceCount, setStory, prog["action"], modCount)();
+                    if (prog["repeat"] && prog["action"]["canExecute"](modified)) {
+                        prog["timeLeft"] = 1;
+                        newActionProgress[key] = prog;
+                    }
                 }
             }
         }

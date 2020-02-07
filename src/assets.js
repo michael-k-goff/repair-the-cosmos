@@ -12,6 +12,13 @@ export const resource_panes = [
 ]
 
 export const resources = resources01;
+// Add extra characteristic dictionaries to the end of each resource
+// They should have been dictionaries from the beginning. Oh well.
+for (var i=0; i<resources.length;i++) {
+    if (resources[i].length == 3) {
+        resources[i] = resources[i].concat([{}]);
+    }
+}
 
 export const actions = actions01;
 

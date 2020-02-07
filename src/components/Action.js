@@ -1,7 +1,8 @@
 // Component for a single action
 
 import React, {useState} from 'react';
-import {StyledActionButton, StyledActionProgress, StyledCancelButton} from './styles/StyledResourcePane';
+import {StyledActionButton, StyledActionProgress, StyledCancelButton, StyledToggleButton, StyledRepeatButton}
+    from './styles/StyledResourcePane';
 
 const progress_to_pct = (prog) => {
     const pct = (100-100*prog["timeLeft"])
@@ -38,6 +39,9 @@ const Action = ({action,
     const handleCancelClick = () => {
         // Now canceling via staging
         more["setStaging"]({"action":action,"operation":"Cancel"});
+    }
+    const handleRepeatToggle = () => {
+        more["setStaging"]({"operation":"RepeatToggle","action":action});
     }
     const enabled = action["canExecute"](resourceCount) && !(action["name"] in actionProgress);
     const count = more["actionCount"][action["name"]];
@@ -85,8 +89,14 @@ const Action = ({action,
                 </StyledCancelButton>
                 :
             ""}
+            {action["name"] in actionProgress ?
+                <StyledToggleButton onClick={handleRepeatToggle}>
+                    Repeat: {actionProgress[action["name"]]["repeat"]?"ON":"OFF"}
+                </StyledToggleButton>
+                :
+            ""}
             {!(action["name"] in actionProgress) ?
-                <StyledActionButton
+                <StyledRepeatButton
                     style={actionButtonColors(repeatHover)}
                     count={more["actionCount"][action["name"]]}
                     enabled={action["canExecute"](resourceCount)}
@@ -95,7 +105,7 @@ const Action = ({action,
                     onMouseLeave={()=>setRepeatHover(0)}
                 >
                     Repeat
-                </StyledActionButton>:
+                </StyledRepeatButton>:
             ""}
         </div>
     )

@@ -4,9 +4,9 @@ export const StyledInfoPane = styled.div`
     background: rgba(150,150,255, 1.0);
     position:absolute;
     top:70vh;
-    left:70vw;
+    left:80vw;
     height:30vh;
-    width:30vw;
+    width:20vw;
     padding:10px;
     box-sizing: border-box;
 `

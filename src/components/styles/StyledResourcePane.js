@@ -6,7 +6,7 @@ export const StyledResourcePane = styled.div`
     top:0;
     left:20vw;
     height:100vh;
-    width:50vw;
+    width:60vw;
     margin-left:20px;
     margin-top:20px;
 `
@@ -24,9 +24,29 @@ export const StyledActionButton = styled.button`
     border-radius: 5px;
 `
 
-export const StyledCancelButton = styled.button`
+export const StyledRepeatButton = styled.button`
     font-size: 16px;
     width: 15%;
+    border: 1px solid black;
+    border-radius: 5px;
+`
+
+export const StyledCancelButton = styled.button`
+    font-size: 16px;
+    width: 12%;
+    background-color: #BA3C00;
+    border: 1px solid black;
+    border-radius: 5px;
+    -webkit-transition-duration: 0.2s; /* Safari */
+    transition-duration: 0.2s;
+    &:hover {
+        background-color: #e7e7e7;
+    }
+`;
+
+export const StyledToggleButton = styled.button`
+    font-size: 16px;
+    width: 16%;
     background-color: #BA3C00;
     border: 1px solid black;
     border-radius: 5px;
@@ -38,7 +58,7 @@ export const StyledCancelButton = styled.button`
 `;
 
 export const StyledActionProgress = styled.progress`
-    width:50%;
+    width:40%;
     height:15px;
 `;
 

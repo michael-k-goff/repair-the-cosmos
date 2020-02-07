@@ -7,6 +7,7 @@ export const resources01 = [
     ["Wood Worker","Population","Specialized in carving wood implements"],
     ["Stone Worker","Population","Specialist in preparing stone tools"],
     ["Hunter","Population","The hunter is more skilled than the gatherer and also takes on more risk."],
+    ["Illness","Population","Illness is bad. If untreated, it will kill your population. It comes from harvesting certain kinds of food.",{"character":"bad"}],
 
     ["Garden of Eden","Territory","You have been kicked out. Repair the Cosmos."],
     ["Savannah","Territory","A good place for hunting and scavenging."],
@@ -20,10 +21,14 @@ export const resources01 = [
     ["Carrion","Resources","Not the most appetizing meal."],
     ["Wild Grains","Resources","Before domestication, cereals were harvested from the wild."],
     ["Wild Fruit","Resources","A rare and delicious treat."],
+    ["Nuts","Resources","High protein food that doesn't fight back."],
+    ["Eggs","Resources","Before animal husbandry is invented, you gather eggs from the wild."],
+    ["Berries","Resources","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
     ["Wood","Resources","Go ahead and waste it. This stuff grows on trees."],
     ["Rocks","Resources","Plain old rocks."],
 
     ["Campsite","Buildings","A campsite to rest."],
+    ["Wood Shelter","Buildings","A basic shelter for resting."],
     ["Fire Pit","Buildings","Mastering fire was a major accomplishment for your people."],
     ["Grain Storage","Buildings","Store grain in caves."],
 
@@ -41,7 +46,9 @@ export const actions01 = [
             }
         },
         "speed":(rC) => {
-            return (1+Math.sqrt(rC["Wild Mushrooms"])+Math.sqrt(rC["Carrion"])+Math.sqrt(rC["Wild Grains"])+Math.sqrt(rC["Wild Fruit"]))/rC["People"];
+            let food_speed = 1+Math.sqrt(rC["Wild Mushrooms"])+Math.sqrt(rC["Carrion"])+Math.sqrt(rC["Wild Grains"])+Math.sqrt(rC["Wild Fruit"])+Math.sqrt(rC["Nuts"])+Math.sqrt(rC["Berries"])+Math.sqrt(rC["Eggs"]);
+            let shelter_speed = 1+Math.sqrt(rC["Wood Shelter"]);
+            return Math.sqrt(food_speed*shelter_speed)/rC["People"];
         },
         "canExecute":(rC) => {return 1},
         "info":(rC)=>{
@@ -202,7 +209,10 @@ export const actions01 = [
     {
         "name":"Gather Mushrooms",
         "pane":"Resources",
-        "effect":(modified) => modified["Wild Mushrooms"] += 1,
+        "effect":(modified) => {
+            modified["Wild Mushrooms"] += 1;
+            modified["Illness"] += 1
+        },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wild Mushrooms"])},
         "canExecute":(rC) => rC["Gatherer"] && rC["Forest"],
         "visible":(rC) => rC["Forest"],
@@ -217,7 +227,10 @@ export const actions01 = [
     {
         "name":"Harvest Carrion",
         "pane":"Resources",
-        "effect":(modified) => modified["Carrion"] += 1,
+        "effect":(modified) => {
+            modified["Carrion"] += 1;
+            modified["Illness"] += 1;
+        },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Carrion"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
         "visible":(rC) => rC["Savannah"],
@@ -233,11 +246,11 @@ export const actions01 = [
         "name":"Gather Grains",
         "pane":"Resources",
         "effect":(modified) => modified["Wild Grains"] += 1,
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Wild Grains"])},
+        "speed":(rC) => {return 0.2*Math.pow(rC["Gatherer"]*rC["Savannah"]*(1+rC["Grain Storage"]), 1/6)/(1+rC["Wild Grains"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
         "visible":(rC) => rC["Savannah"],
         "info":(rC)=>{
-            let message = ["Foraging for wild grains. Faster with more Gatherers, Savannah."];
+            let message = ["Foraging for wild grains. Faster with more Gatherers, Savannah, Grain Storage."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
             }
@@ -253,6 +266,56 @@ export const actions01 = [
         "visible":(rC) => rC["Savannah"],
         "info":(rC)=>{
             let message = ["Looking for wild fruit. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Gather Nuts",
+        "pane":"Resources",
+        "effect":(modified) => modified["Nuts"] += 1,
+        "speed":(rC) => {
+            return 0.1*Math.pow(rC["Gatherer"]*rC["Valley"], 0.25)/(1+rC["Nuts"])
+        },
+        "canExecute":(rc) => rc["Gatherer"] && rc["Valley"],
+        "visible":(rC) => rC["Valley"],
+        "info":(rC)=>{
+            let message = ["Pick nuts. Faster with more Gatherers, Valley."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Gather Eggs",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Eggs"] += 1;
+            modified["Illness"] += 1;
+        },
+        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Hills"], 0.25)/(1+rC["Eggs"])},
+        "canExecute":(rc) => rc["Gatherer"] && rc["Hills"],
+        "visible":(rC) => rC["Hills"],
+        "info":(rC)=>{
+            let message = ["Gather eggs. Faster with more Gatherers, Hills."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Pick Berries",
+        "pane":"Resources",
+        "effect":(modified) => modified["Berries"] += 1,
+        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["River"], 0.25)/(1+rC["Berries"])},
+        "canExecute":(rc) => rc["Gatherer"] && rc["River"],
+        "visible":(rC) => rC["River"],
+        "info":(rC)=>{
+            let message = ["Pick berries. Faster with more Gatherers, River."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
             }
@@ -308,6 +371,21 @@ export const actions01 = [
         }
     },
     {
+        "name":"Build Wood Shelter",
+        "pane":"Buildings",
+        "effect":(modified) => modified["Wood Shelter"] += 1,
+        "speed":(rC) => {return 0.02*Math.pow(rC["Wood"]*rC["Campsite"]*rC["Wood Worker"], 1/6)/(1+rC["Wood Shelter"])},
+        "canExecute":(rc) => rc["Campsite"] && rc["Wood Worker"],
+        "visible":(rC) => rC["Campsite"],
+        "info":(rC)=>{
+            let message = ["Build a basic shelter. This will help your population grow. Faster with more Wood, Wood Workers, Campsites."];
+            if (!rC["Wood Worker"]) {
+                message = message.concat(["You need a Wood Worker."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Build Fire Pit",
         "pane":"Buildings",
         "effect":(modified) => modified["Fire Pit"] += 1,
@@ -330,7 +408,7 @@ export const actions01 = [
         "canExecute":(rc) => rc["Wild Grains"] && rc["Cave"],
         "visible":(rC) => rC["Wild Grains"] || rC["Cave"],
         "info":(rC)=>{
-            let message = ["Storing grain increase its effectiveness in feeding the population. Faster with more Wild Grains, Caves."];
+            let message = ["Storing grain allows for more production of wild grain. Faster with more Wild Grains, Caves."];
             if (!rC["Wild Grains"]) {
                 message = message.concat(["You need some Wild Grains to store."]);
             }

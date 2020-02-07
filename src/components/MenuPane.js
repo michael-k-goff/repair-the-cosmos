@@ -1,7 +1,7 @@
 import React from 'react';
 import ActionSummary from './ActionSummary';
 import {StyledMenuPane, StyledPaneButton, StyledMenuHeader,
-    StyledMenuGap, StyledSettingsButton
+    StyledMenuGap, StyledSettingsButton, StyledMenuSmallGap
 } from './styles/StyledMenuPane';
 import {resource_panes, resources_by_pane, actions_by_pane} from '../assets.js';
 
@@ -11,6 +11,7 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
             <StyledMenuHeader>
                 Repair the Cosmos
             </StyledMenuHeader>
+
             {resource_panes.filter(r=>{
                 for (var i=0; i<resources_by_pane[r[0]].length; i++) {
                     let res = resources_by_pane[r[0]][i][0];
@@ -35,17 +36,38 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
                     {r[0]}
                 </StyledPaneButton>
             )}
+
             <StyledMenuGap />
+
+            <StyledSettingsButton
+                onClick={()=>more["setStaging"]({"operation":"CancelALL"})}
+                onMouseOver={()=>setHover("Cancel all actions currently in progress.")}
+            >
+                Cancel Actions
+            </StyledSettingsButton>
+            <StyledSettingsButton
+                onClick={()=>more["setStaging"]({"operation":"CancelRepeat"})}
+                onMouseOver={()=>setHover("Cancel all repeats. Actions in progress will be allowed to continue but will not repeat.")}
+            >
+                Cancel Repeats
+            </StyledSettingsButton>
+
+            <StyledMenuSmallGap />
+
             <StyledSettingsButton
                 onClick={()=>setPane("Settings")}
                 onMouseOver={()=>setHover("See general game info and settings.")}
             >
                 Info & Settings
             </StyledSettingsButton>
+
+            <StyledMenuSmallGap />
+
             <ActionSummary
                 resourceCount = {resourceCount}
                 actionProgress={actionProgress}
             />
+
         </StyledMenuPane>
     )
 }

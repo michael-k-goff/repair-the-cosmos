@@ -4,9 +4,9 @@ export const StyledStoryPane = styled.div`
     background: rgba(180,180,255, 1.0);
     position:absolute;
     top:0vh;
-    left:70vw;
+    left:80vw;
     height:70vh;
-    width:30vw;
+    width:20vw;
     padding:10px;
     box-sizing: border-box;
 `
