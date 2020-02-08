@@ -62,6 +62,23 @@ export const StyledActionProgress = styled.progress`
     height:15px;
 `;
 
+export const StyledAutoActionName = styled.div`
+    position:absolute;
+    left:0;
+`;
+
+export const StyledAutoActionProgressContainer = styled.div`
+    position:absolute;
+    left:25%;
+    width:40%;
+    height:15%;
+`;
+
+export const StyledAutoActionProgress = styled.progress`
+    width:100%;
+    height:15px;
+`;
+
 export const StyledResourceName = styled.div`
     position:absolute;
     left:0;
@@ -74,6 +91,7 @@ export const StyledResourceCount = styled.div`
 
 export const StyledResourceBox = styled.div`
     height:20px;
+    color: ${props => ({"bad":"#FF0000","":"FFFFFF"}[props.character])};
 `
 
 export const StyledResourcePaneDivider = styled.div`

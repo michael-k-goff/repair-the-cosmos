@@ -5,7 +5,10 @@ import {StyledResourceName, StyledResourceCount, StyledResourceBox} from './styl
 
 const Resource = ({resource, count, resourceCount, setResourceCount, hover, setHover}) => {
     return (
-        <StyledResourceBox onMouseOver={()=>setHover(resource[2])}>
+        <StyledResourceBox
+            onMouseOver={()=>setHover(resource[2])}
+            character={"character" in resource[3] ? resource[3]["character"] : ""}
+        >
             <StyledResourceName>
                 {resource[0]}
             </StyledResourceName>

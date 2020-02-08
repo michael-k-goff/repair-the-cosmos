@@ -20,7 +20,10 @@ const ActionSummary = ({resourceCount, actionProgress}) => {
         <div>
             {action_keys.map((k)=>(
                 <p key={k}>
-                    {k}: {timeLeftString(timeLeftDict[k])} {actionProgress[k]["repeat"] ? "(R)":""}
+                    {k}: {timeLeftString(timeLeftDict[k])} {
+                        actionProgress[k]["action"]["auto"] ? "(A)" :
+                            actionProgress[k]["repeat"] ? "(R)":""
+                    }
                 </p>
             ))}
         </div>

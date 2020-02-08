@@ -12,10 +12,18 @@ const RandADisplay = ({pane,
 }) => {
     const display_resources_by_pane = resources_by_pane[pane].filter((r) => {
         return resourceCount[r[0]];
+    }).sort((a,b)=>{
+        if (a[3]["sort_key"]<b[3]["sort_key"]) {return -1;}
+        if (a[3]["sort_key"]==b[3]["sort_key"]) {return 0;}
+        if (a[3]["sort_key"]>b[3]["sort_key"]) {return 1;}
     });
     const display_actions_by_pane = actions_by_pane[pane].filter((a) => {
-        return "visible" in a ? a["visible"](resourceCount) : a["canExecute"](resourceCount);
-    })
+        return "visible" in a ? a["visible"](resourceCount,more) : a["canExecute"](resourceCount,more);
+    }).sort((a,b)=>{
+        if (a["sort_key"]<b["sort_key"]) {return -1;}
+        if (a["sort_key"]==b["sort_key"]) {return 0;}
+        if (a["sort_key"]>b["sort_key"]) {return 1;}
+    });
     return (
         <div>
             {display_actions_by_pane.map((a) =>

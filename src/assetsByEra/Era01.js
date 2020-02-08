@@ -26,6 +26,7 @@ export const resources01 = [
     ["Berries","Resources","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
     ["Wood","Resources","Go ahead and waste it. This stuff grows on trees."],
     ["Rocks","Resources","Plain old rocks."],
+    ["Herbs","Resources","Wild herbs can use illness. Use them on the Population tab."],
 
     ["Campsite","Buildings","A campsite to rest."],
     ["Wood Shelter","Buildings","A basic shelter for resting."],
@@ -154,6 +155,41 @@ export const actions01 = [
         }
     },
     {
+        "name":"Succumb to Illness",
+        "pane":"Population",
+        "effect":(modified)=> {
+            modified["People"] -= 1;
+            modified["Illness"] -= 1;
+        },
+        "speed":(rC) => {return 0.00001*rC["People"]*rC["Illness"]},
+        "canExecute":(rC) => rC["People"]>2 && rC["Illness"]>0,
+        "auto":1,
+        "info":(rC)=>{
+            return ["Kills a person. Goes faster with more Illness and more people."];
+        }
+    },
+    {
+        "name":"Use Herbs",
+        "pane":"Population",
+        "effect":(modified) => {
+            modified["Illness"] -= 1;
+            modified["Herbs"] -= 1;
+        },
+        "speed":(rC)=>0.05*rC["Herbs"],
+        "canExecute":(rC) => rC["Herbs"] && rC["Illness"],
+        "visible":(rC,more) => more["actionCount"]["Gather Herbs"],
+        "info":(rC)=>{
+            let message = ["Apply herbs to cure illness."];
+            if (!rC["Herbs"]) {
+                message = message.concat(["You need to have an Herb."]);
+            }
+            if (!rC["Illness"]) {
+                message = message.concat(["None of your people are ill, so there is no reason."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Explore Savannah",
         "pane":"Territory",
         "effect":(modified, setStory) => {
@@ -164,39 +200,67 @@ export const actions01 = [
         },
         "speed":(rC) => {return 0.2*Math.sqrt(rC["Scout"])/(1+rC["Savannah"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Savannah to settle. Train more Scouts to search faster. Faster with more Scouts."]
+        "info":(rc) => ["Search for Savannah to settle. Faster with more Scouts."]
     },
     {
         "name":"Explore Forest",
         "pane":"Territory",
         "effect":(modified) => modified["Forest"] += 1,
         "speed":(rC) => {return 0.1*Math.sqrt(rC["Scout"])/(1+rC["Forest"])},
-        "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Forest to settle. Train more Scouts to search faster. Faster with more Scouts."]
+        "canExecute":(rC) => rC["Savannah"]>=3,
+        "visible":(rC)=>rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Search for Forest to settle. Faster with more Scouts."];
+            if (rC["Savannah"] < 3) {
+                message = message.concat(["Explore the Savannah some more first."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Explore Hills",
         "pane":"Territory",
         "effect":(modified) => modified["Hills"] += 1,
         "speed":(rC) => {return 0.1*Math.sqrt(rC["Scout"])/(1+rC["Hills"])},
-        "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Hills to settle. Train more Scouts to search faster. Faster with more Scouts."]
+        "canExecute":(rC) => rC["Savannah"]>=3,
+        "visible":(rC)=>rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Search for Hills to settle. Faster with more Scouts."];
+            if (rC["Savannah"] < 3) {
+                message = message.concat(["Explore the Savannah some more first."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Explore Valley",
         "pane":"Territory",
         "effect":(modified) => modified["Valley"] += 1,
         "speed":(rC) => {return 0.07*Math.sqrt(rC["Scout"])/(1+rC["Valley"])},
-        "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for a valley to settle. Train more Scouts to search faster. Faster with more Scouts."]
+        "canExecute":(rC) => rC["Savannah"]>=3,
+        "visible":(rC)=>rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Search for Valley to settle. Faster with more Scouts."];
+            if (rC["Savannah"] < 3) {
+                message = message.concat(["Explore the Savannah some more first."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Explore River",
         "pane":"Territory",
         "effect":(modified) => modified["River"] += 1,
         "speed":(rC) => {return 0.07*Math.sqrt(rC["Scout"])/(1+rC["River"])},
-        "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Savannah to settle. Train more Scouts to search faster. A good place to park a van. Faster with more Scouts."]
+        "canExecute":(rC) => rC["Savannah"]>=3,
+        "visible":(rC)=>rC["Savannah"],
+        "info":(rC)=>{
+            let message = ["Search for River to settle. Faster with more Scouts."];
+            if (rC["Savannah"] < 3) {
+                message = message.concat(["Explore the Savannah some more first."]);
+            }
+            return message;
+        }
     },
     {
         "name":"Explore Cave",
@@ -346,6 +410,21 @@ export const actions01 = [
         "visible":(rC) => rC["Savannah"],
         "info":(rC)=>{
             let message = ["Gathering rocks is boring, but they might be useful. Faster with more Gatherers, Savannah."];
+            if (!rC["Gatherer"]) {
+                message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Gather Herbs",
+        "pane":"Resources",
+        "effect":(modified) => modified["Herbs"] += 1,
+        "speed":(rC) => {return 0.05*Math.pow(rC["Gatherer"]*rC["River"], 0.25)/(1+rC["Herbs"])},
+        "canExecute":(rc) => rc["Gatherer"] && rc["River"],
+        "visible":(rC) => rC["River"],
+        "info":(rC)=>{
+            let message = ["Gather some wild herbs. You should have a few on hand to help cure illness. Faster with more Gatherer, River."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
             }

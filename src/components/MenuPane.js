@@ -21,7 +21,7 @@ const MenuPane = ({pane, setPane, resourceCount, setResourceCount, hover, setHov
                 }
                 for (i=0; i<actions_by_pane[r[0]].length; i++) {
                     let a = actions_by_pane[r[0]][i];
-                    if ("visible" in a ? a["visible"](resourceCount) : a["canExecute"](resourceCount)) {
+                    if ("visible" in a ? a["visible"](resourceCount,more) : a["canExecute"](resourceCount,more)) {
                         return true;
                     }
                 }

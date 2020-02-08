@@ -1,7 +1,16 @@
 // Component for a single action
 
 import React, {useState} from 'react';
-import {StyledActionButton, StyledActionProgress, StyledCancelButton, StyledToggleButton, StyledRepeatButton}
+import {
+    StyledActionButton,
+    StyledActionProgress,
+    StyledCancelButton,
+    StyledToggleButton,
+    StyledRepeatButton,
+    StyledAutoActionName,
+    StyledAutoActionProgress,
+    StyledAutoActionProgressContainer
+}
     from './styles/StyledResourcePane';
 
 const progress_to_pct = (prog) => {
@@ -22,14 +31,14 @@ const Action = ({action,
     const [mainHover, setMainHover] = useState(0);
     const [repeatHover, setRepeatHover] = useState(0);
     const handleClick = () => {
-        if (!action["canExecute"](resourceCount) || action["name"] in actionProgress) {
+        if (!action["canExecute"](resourceCount,more) || action["name"] in actionProgress) {
             return;
         }
         // Now setting the new action via staging rather than directly
         more["setStaging"]({"action":action,"operation":"One"});
     }
     const handleClickRepeat = () => {
-        if (!action["canExecute"](resourceCount)) {
+        if (!action["canExecute"](resourceCount,more)) {
             return;
         }
         // Now setting the new action via staging rather than directly
@@ -43,7 +52,7 @@ const Action = ({action,
     const handleRepeatToggle = () => {
         more["setStaging"]({"operation":"RepeatToggle","action":action});
     }
-    const enabled = action["canExecute"](resourceCount) && !(action["name"] in actionProgress);
+    const enabled = action["canExecute"](resourceCount,more) && !(action["name"] in actionProgress);
     const count = more["actionCount"][action["name"]];
     const actionButtonColors = (hover_var) => {
         let brightness = Math.sin(new Date().getTime()/500)
@@ -66,6 +75,23 @@ const Action = ({action,
             'backgroundColor': bg
         }
     };
+    if (!(action["name"] in actionProgress) && action["auto"]) {
+        return <div/>;
+    }
+    // Auto actions
+    if (action["auto"]) {
+        return (
+            <div onMouseOver={()=>setHover(action)}>
+                <StyledAutoActionName>
+                    {action["name"]}
+                </StyledAutoActionName>
+                <StyledAutoActionProgressContainer>
+                    <StyledAutoActionProgress value={1-actionProgress[action["name"]]["timeLeft"]} max={1}/>
+                </StyledAutoActionProgressContainer>
+            </div>
+        )
+    }
+    // Normal actions
     return (
         <div onMouseOver={()=>setHover(action)}>
             <StyledActionButton
@@ -99,7 +125,7 @@ const Action = ({action,
                 <StyledRepeatButton
                     style={actionButtonColors(repeatHover)}
                     count={more["actionCount"][action["name"]]}
-                    enabled={action["canExecute"](resourceCount)}
+                    enabled={action["canExecute"](resourceCount,more)}
                     onClick={handleClickRepeat}
                     onMouseOver={()=>setRepeatHover(1)}
                     onMouseLeave={()=>setRepeatHover(0)}
