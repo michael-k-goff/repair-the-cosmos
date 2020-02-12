@@ -7,7 +7,9 @@ export const resources01 = [
     ["Wood Worker","Population","Specialized in carving wood implements"],
     ["Stone Worker","Population","Specialist in preparing stone tools"],
     ["Hunter","Population","The hunter is more skilled than the gatherer and also takes on more risk."],
+    ["Brain Size","Population","During the Lower Paleolithic, homonid brains grew to their present size, which in Repair the Cosmos is 10."],
     ["Illness","Population","Illness is bad. If untreated, it will kill your population. It comes from harvesting certain kinds of food.",{"character":"bad"}],
+    ["Infant Mortality","Population","As brain size grows, delivery becomes more challenging, and more children die in childbirth. This stat is the percentage change that a child dies in birth. It decreases, to a point, with attempted births."],
 
     ["Garden of Eden","Territory","You have been kicked out. Repair the Cosmos."],
     ["Savannah","Territory","A good place for hunting and scavenging."],
@@ -18,6 +20,7 @@ export const resources01 = [
     ["Cave","Territory","If you're going to be a band of cavepeople, you need a cave."],
 
     ["Food","Resources","Food is your most basic resource and needed to grow your civilization."],
+    ["Protein","Resources","Concentrated nutritional energy. It is essential for growing your strength and endurance."],
     ["Wild Mushrooms","Resources","Wild mushrooms are good food."],
     ["Knowledge of Mushrooms","Resources","Through some unfortunate trial and error, you are learning which mushrooms won't make you sick."],
     ["Carrion","Resources","Not the most appetizing meal, but an important source of protein early in history."],
@@ -29,6 +32,7 @@ export const resources01 = [
     ["Knowledge of Berries","Resources","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
     ["Wood","Resources","Go ahead and waste it. This stuff grows on trees."],
     ["Rocks","Resources","Plain old rocks."],
+    ["Stone Tools","Resources","The most basic stone tools."],
     ["Herbs","Resources","Cure illness. Use them on the Population tab."],
 
     ["Campsite","Buildings","A campsite to rest."],
@@ -36,7 +40,10 @@ export const resources01 = [
     ["Fire Pit","Buildings","Mastering fire was a major accomplishment for your people."],
     ["Grain Storage","Buildings","Store grain in caves."],
 
-    ["Tribe","Society","An organized tribe, based on mutual interpersonal familiarity."]
+    ["Tribe","Society","An organized tribe, based on mutual interpersonal familiarity."],
+
+    ["Brute","Military","A basic brawler."],
+    ["Stone Thrower","Military","Does not live in a glass house."]
 ]
 
 export const actions01 = [
@@ -47,7 +54,12 @@ export const actions01 = [
             if (modified["People"] >= 10) {
                 modified["Food"] -= 1;
             }
-            modified["People"] += 1;
+            let success = Math.random() > modified["Infant Mortality"]/100 ? 1:0;
+            if (!modified["Infant Mortality"]) {success = 1}
+            modified["People"] += success;
+            if (!success && modified["Infant Mortality"] >= 31) {
+                modified["Infant Mortality"] -= 1;
+            }
             if (modified["People"]===10 && !modified["Savannah"]) {
                 setStory(["Great work, your band is growing. Now it is time to specialize.","I suggest you train a scout so you can explore your surroundings."])
             }
@@ -113,7 +125,7 @@ export const actions01 = [
             modified["Wood Worker"] += 1;
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Wood"],0.25)/(1+rC["Wood Worker"])},
-        "canExecute":(rC) => {return rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] > 2+rC["Wood Worker"] * 2},
+        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] > 2+rC["Wood Worker"] * 2},
         "visible":(rC) => rC["Wood"] >= 1,
         "info":(rC)=>{
             let message = ["Train wood workers to fashion wooden tools. Faster with more People, Wood."];
@@ -122,6 +134,9 @@ export const actions01 = [
             }
             if (rC["Wood"] <= 2+rC["Wood Worker"] * 2) {
                 message = message.concat(["You need more Wood."]);
+            }
+            if (rC["Brain Size"] < 3) {
+                message = message.concat(["To need to increase Brain Size."]);
             }
             return message;
         }
@@ -133,7 +148,7 @@ export const actions01 = [
             modified["Stone Worker"] += 1;
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Rocks"],0.25)/(1+rC["Stone Worker"])},
-        "canExecute":(rC) => {return rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] > 2+rC["Stone Worker"] * 2},
+        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] > 2+rC["Stone Worker"] * 2},
         "visible":(rC) => rC["Rocks"] >= 1,
         "info":(rC)=>{
             let message = ["Train stone workers to create and maintain stone tools. Faster with more People, Rocks."];
@@ -142,6 +157,9 @@ export const actions01 = [
             }
             if (rC["Rocks"] <= 2+rC["Stone Worker"] * 2) {
                 message = message.concat(["You need more Rocks."]);
+            }
+            if (rC["Brain Size"] < 3) {
+                message = message.concat(["To need to increase Brain Size."]);
             }
             return message;
         }
@@ -167,6 +185,27 @@ export const actions01 = [
         }
     },
     {
+        "name":"Brain Expansion",
+        "pane":"Population",
+        "effect":(modified) => {
+            modified["Brain Size"] += 1;
+            modified["Protein"] -= modified["Brain Size"];
+            modified["Infant Mortality"] += 9;
+        },
+        "speed":(rC) => {
+            return 0.02*rC["Protein"]/(1+rC["Brain Size"]);
+        },
+        "canExecute":(rC)=>rC["Brain Size"] ? (rC["Brain Size"] < 10 && rC["Protein"]>=rC["Brain Size"]+1) : rC["Protein"]>=1,
+        "visible":(rC,more) => more["actionCount"]["Brain Expansion"] || rC["Protein"],
+        "info":(rC)=>{
+            let message = ["Evolved into hominids with larger brains. Grows faster with more Protein."];
+            if (rC["Protein"] < (rC["Brain Size"]?rC["Brain Size"]+1 : 1)) {
+                message = message.concat(["You need more Protein."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Succumb to Illness",
         "pane":"Population",
         "effect":(modified)=> {
@@ -175,7 +214,7 @@ export const actions01 = [
             }
             modified["Illness"] -= 1;
         },
-        "speed":(rC) => {return 0.001*rC["People"]*rC["Illness"]},
+        "speed":(rC) => {return 0.020*rC["Illness"]},
         "canExecute":(rC) => rC["People"]>2 && rC["Illness"]>=1,
         "auto":1,
         "info":(rC)=>{
@@ -345,8 +384,9 @@ export const actions01 = [
             modified["Carrion"] -= 1;
             modified["Illness"] += 1;
             modified["Food"] += 1;
+            modified["Protein"] += 2;
         },
-        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "speed":(rC)=>{return 1/(1+rC["Food"]+rC["Protein"])},
         "canExecute":(rC)=>rC["Carrion"],
         "visible":(rC,more) => more["actionCount"]["Harvest Carrion"],
         "info":(rC)=>{
@@ -446,8 +486,9 @@ export const actions01 = [
         "effect":(modified) => {
             modified["Nuts"] -= 1;
             modified["Food"] += 1;
+            modified["Protein"] += 1;
         },
-        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "speed":(rC)=>{return 1/(1+rC["Food"]+rC["Protein"])},
         "canExecute":(rC)=>rC["Nuts"],
         "visible":(rC,more) => more["actionCount"]["Gather Nuts"],
         "info":(rC)=>{
@@ -482,8 +523,9 @@ export const actions01 = [
             modified["Eggs"] -= 1;
             modified["Illness"] += 1;
             modified["Food"] += 1;
+            modified["Protein"] += 1;
         },
-        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "speed":(rC)=>{return 1/(1+rC["Food"]+rC["Protein"])},
         "canExecute":(rC)=>rC["Eggs"],
         "visible":(rC,more) => more["actionCount"]["Gather Eggs"],
         "info":(rC)=>{
@@ -561,6 +603,24 @@ export const actions01 = [
         }
     },
     {
+        "name":"Make Stone Tools",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Rocks"] -= 1;
+            modified["Stone Tools"] += 1;
+        },
+        "speed":(rC) => {return 0.05*Math.pow(rC["Stone Worker"]*rC["Rocks"], 0.25)/(1+rC["Stone Tools"])},
+        "canExecute":(rc) => rc["Stone Worker"] && rc["Rocks"],
+        "visible":(rC) => rC["Stone Worker"],
+        "info":(rC)=>{
+            let message = ["Manufacture some basic stone tools."];
+            if (!rC["Rocks"]) {
+                message = message.concat(["You need some Rocks."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Gather Herbs",
         "pane":"Resources",
         "effect":(modified) => modified["Herbs"] += 1,
@@ -572,6 +632,19 @@ export const actions01 = [
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
             }
+            return message;
+        }
+    },
+    {
+        "name":"Gather",
+        "pane":"Resources",
+        "effect":(modified)=>{},
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC)=> {
+            return rC["Gatherer"]
+        },
+        "info":(rC) => {
+            let message = ["Explore and gather a random resources. Faster than searching for a particular resource, but you might not get what you want. (Not yet implemented.)"];
             return message;
         }
     },
@@ -649,13 +722,73 @@ export const actions01 = [
             setStory(["Your band has grown into a full-fledged tribe. This is the end of the current demo. Thanks for playing, and please check back later.","You can continue building your population and resources if you so desire."]);
         },
         "speed":(rC) => {return 0.001*Math.pow(rC["People"]*(rC["Valley"]+rC["River"])*(rC["Fire Pit"]+rC["Grain Storage"]), 1/6)/(1+rC["Tribe"])},
-        "canExecute":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"] && rC["People"]>=50,
+        "canExecute":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"] && rC["People"]>=50 && rC["Brain Size"]>=10,
         "visible":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"],
         "info":(rC)=>{
             let message = ["Turn your band into an organized tribe. You need a lot of people. Faster with more People, Valley, River, Fire Pit, Grain Storage."];
             if (rC["People"] < 50) {
                 message = message.concat(["You need more People."]);
             }
+            if (rC["Brain Size"] < 10) {
+                message = message.concat(["You need a bigger Brain Size, dummy."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Train Brute",
+        "pane":"Military",
+        "effect":(modified) => {
+            modified["Brute"] += 1;
+        },
+        "speed":(rC)=>0.05*Math.pow(rC["People"],0.25)*Math.pow(rC["Protein"],0.25)/(1+rC["Brute"]),
+        "canExecute":(rC) => {
+            return rC["Protein"] && (rC["People"] > 9+(rC["Brute"]?rC["Brute"]:0) * 3);
+        },
+        "visible":(rC) => rC["People"] >= 10,
+        "info":(rC)=>{
+            let message = ["Train Brutes. Faster with more People, Protein."]
+            if (rC["People"] <= 9+rC["Brute"] * 3) {
+                message = message.concat(["You need more people."]);
+            }
+            if (!rC["Protein"]) {
+                message = message.concat(["You need some Protein."])
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Train Stone Thrower",
+        "pane":"Military",
+        "effect":(modified) => {
+            modified["Stone Thrower"] += 1;
+        },
+        "speed":(rC)=>0.05*Math.pow(rC["People"],0.25)*Math.pow(rC["Protein"],0.25)/(1+rC["Stone Thrower"]),
+        "canExecute":(rC) => {return rC["Rocks"] && rC["Protein"] && rC["People"] > 9+(rC["Stone Thrower"]?rC["Stone Thrower"]:0) * 3},
+        "visible":(rC) => rC["People"] >= 10,
+        "info":(rC)=>{
+            let message = ["Train Stone Throwers. Faster with more People."]
+            if (rC["People"] <= 9+rC["Stone Thrower"] * 3) {
+                message = message.concat(["You need more people."]);
+            }
+            if (!rC["Protein"]) {
+                message = message.concat(["You need some Protein."])
+            }
+            if (!rC["Rocks"]) {
+                message = message.concat(["You need some Rocks to throw."])
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Fight",
+        "pane":"Military",
+        "effect":(modified)=> {},
+        "speed":(rC) => 0.1,
+        "canExecute":(rC)=>{return rC["Brute"] || rC["Stone Thrower"]},
+        "visible":(rC)=>{return rC["Brute"] || rC["Stone Thrower"]},
+        "info":(rC)=>{
+            let message = ["Start a fight. It doesn't do anything at the moment."];
             return message;
         }
     }

@@ -8,7 +8,8 @@ export const resource_panes = [
     ["Territory","Explore and acquire new territory."],
     ["Resources","Gather natural resources."],
     ["Buildings","Build stuff."],
-    ["Society","Manage government, religion, etc."]
+    ["Society","Manage government, religion, etc."],
+    ["Military","Take territory, resources, etc."]
 ]
 
 export const resources = resources01;
