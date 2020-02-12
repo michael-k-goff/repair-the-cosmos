@@ -17,23 +17,26 @@ export const resources01 = [
     ["River","Territory","Great for fishing and trade."],
     ["Cave","Territory","If you're going to be a band of cavepeople, you need a cave."],
 
+    ["Food","Resources","Food is your most basic resource and needed to grow your civilization."],
     ["Wild Mushrooms","Resources","Wild mushrooms are good food."],
-    ["Carrion","Resources","Not the most appetizing meal."],
+    ["Knowledge of Mushrooms","Resources","Through some unfortunate trial and error, you are learning which mushrooms won't make you sick."],
+    ["Carrion","Resources","Not the most appetizing meal, but an important source of protein early in history."],
     ["Wild Grains","Resources","Before domestication, cereals were harvested from the wild."],
     ["Wild Fruit","Resources","A rare and delicious treat."],
     ["Nuts","Resources","High protein food that doesn't fight back."],
     ["Eggs","Resources","Before animal husbandry is invented, you gather eggs from the wild."],
-    ["Berries","Resources","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
+    ["Berries","Resources","Berries are delicious, but they will make you sick if you're not careful."],
+    ["Knowledge of Berries","Resources","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
     ["Wood","Resources","Go ahead and waste it. This stuff grows on trees."],
     ["Rocks","Resources","Plain old rocks."],
-    ["Herbs","Resources","Wild herbs can use illness. Use them on the Population tab."],
+    ["Herbs","Resources","Cure illness. Use them on the Population tab."],
 
     ["Campsite","Buildings","A campsite to rest."],
     ["Wood Shelter","Buildings","A basic shelter for resting."],
     ["Fire Pit","Buildings","Mastering fire was a major accomplishment for your people."],
     ["Grain Storage","Buildings","Store grain in caves."],
 
-    ["Tribe","Society","An organized tribe, based on mutual interpersonal knowledge."]
+    ["Tribe","Society","An organized tribe, based on mutual interpersonal familiarity."]
 ]
 
 export const actions01 = [
@@ -41,19 +44,28 @@ export const actions01 = [
         "name":"Reproduce",
         "pane":"Population",
         "effect":(modified, setStory) => {
+            if (modified["People"] >= 10) {
+                modified["Food"] -= 1;
+            }
             modified["People"] += 1;
-            if (modified["People"]===10) {
+            if (modified["People"]===10 && !modified["Savannah"]) {
                 setStory(["Great work, your band is growing. Now it is time to specialize.","I suggest you train a scout so you can explore your surroundings."])
             }
         },
         "speed":(rC) => {
-            let food_speed = 1+Math.sqrt(rC["Wild Mushrooms"])+Math.sqrt(rC["Carrion"])+Math.sqrt(rC["Wild Grains"])+Math.sqrt(rC["Wild Fruit"])+Math.sqrt(rC["Nuts"])+Math.sqrt(rC["Berries"])+Math.sqrt(rC["Eggs"]);
+            let food_speed = 1+Math.sqrt(rC["Food"]);
             let shelter_speed = 1+Math.sqrt(rC["Wood Shelter"]);
             return Math.sqrt(food_speed*shelter_speed)/rC["People"];
         },
-        "canExecute":(rC) => {return 1},
+        "canExecute":(rC) => {
+            return (rC["People"]<10 || rC["Food"]>=1);
+        },
+        "visible":(rC)=>1,
         "info":(rC)=>{
             let message = ["Grow your population. Faster with more food."];
+            if (rC["People"] >= 10 && !rC["Food"]) {
+                message = message.concat(["You need food to grow further."]);
+            }
             return message;
         }
     },
@@ -158,11 +170,13 @@ export const actions01 = [
         "name":"Succumb to Illness",
         "pane":"Population",
         "effect":(modified)=> {
-            modified["People"] -= 1;
+            if (modified["People"] > 2) {
+                modified["People"] -= 1;
+            }
             modified["Illness"] -= 1;
         },
-        "speed":(rC) => {return 0.00001*rC["People"]*rC["Illness"]},
-        "canExecute":(rC) => rC["People"]>2 && rC["Illness"]>0,
+        "speed":(rC) => {return 0.001*rC["People"]*rC["Illness"]},
+        "canExecute":(rC) => rC["People"]>2 && rC["Illness"]>=1,
         "auto":1,
         "info":(rC)=>{
             return ["Kills a person. Goes faster with more Illness and more people."];
@@ -176,7 +190,7 @@ export const actions01 = [
             modified["Herbs"] -= 1;
         },
         "speed":(rC)=>0.05*rC["Herbs"],
-        "canExecute":(rC) => rC["Herbs"] && rC["Illness"],
+        "canExecute":(rC) => rC["Herbs"] && rC["Illness"]>=1,
         "visible":(rC,more) => more["actionCount"]["Gather Herbs"],
         "info":(rC)=>{
             let message = ["Apply herbs to cure illness."];
@@ -275,7 +289,6 @@ export const actions01 = [
         "pane":"Resources",
         "effect":(modified) => {
             modified["Wild Mushrooms"] += 1;
-            modified["Illness"] += 1
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wild Mushrooms"])},
         "canExecute":(rC) => rC["Gatherer"] && rC["Forest"],
@@ -289,11 +302,30 @@ export const actions01 = [
         }
     },
     {
+        "name":"Consume Mushrooms",
+        "pane":"Resources",
+        "effect":(modified)=>{
+            modified["Wild Mushrooms"] -= 1;
+            modified["Illness"] += 2/(Math.max(2,modified["Knowledge of Mushrooms"]));
+            modified["Food"] += 1;
+            modified["Knowledge of Mushrooms"] += ( 1/(1+Math.pow(modified["Knowledge of Mushrooms"],0.7)) );
+        },
+        "speed":(rC) => {return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Wild Mushrooms"],
+        "visible":(rC,more) => more["actionCount"]["Gather Mushrooms"],
+        "info":(rC)=>{
+            let message = ["Eat a delicious mushroom."];
+            if (!rC["Wild Mushrooms"]) {
+                message = message.concat(["You need a Mushroom."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Harvest Carrion",
         "pane":"Resources",
         "effect":(modified) => {
             modified["Carrion"] += 1;
-            modified["Illness"] += 1;
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Carrion"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
@@ -302,6 +334,25 @@ export const actions01 = [
             let message = ["Watch out for the hyenas. Faster with more Gatherers, Savannah."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Consume Carrion",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Carrion"] -= 1;
+            modified["Illness"] += 1;
+            modified["Food"] += 1;
+        },
+        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Carrion"],
+        "visible":(rC,more) => more["actionCount"]["Harvest Carrion"],
+        "info":(rC)=>{
+            let message = ["You need the protein ... but damn."];
+            if (!rC["Carrion"]) {
+                message = message.concat(["You need Carrion."]);
             }
             return message;
         }
@@ -322,6 +373,24 @@ export const actions01 = [
         }
     },
     {
+        "name":"Consume Grains",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Wild Grains"] -= 1;
+            modified["Food"] += 1;
+        },
+        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Wild Grains"],
+        "visible":(rC,more) => more["actionCount"]["Gather Grains"],
+        "info":(rC)=>{
+            let message = ["Early grains were not much of a meal, but it will do."];
+            if (!rC["Carrion"]) {
+                message = message.concat(["You need Wild Grains."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Gather Fruit",
         "pane":"Resources",
         "effect":(modified) => modified["Wild Fruit"] += 1,
@@ -332,6 +401,24 @@ export const actions01 = [
             let message = ["Looking for wild fruit. Faster with more Gatherers, Savannah."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Eat Fruit",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Wild Fruit"] -= 1;
+            modified["Food"] += 1;
+        },
+        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Wild Fruit"],
+        "visible":(rC,more) => more["actionCount"]["Gather Fruit"],
+        "info":(rC)=>{
+            let message = ["The tastiest meal you have available now."];
+            if (!rC["Wild Fruit"]) {
+                message = message.concat(["You need Wild Fruit."]);
             }
             return message;
         }
@@ -354,11 +441,28 @@ export const actions01 = [
         }
     },
     {
+        "name":"Eat Nuts",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Nuts"] -= 1;
+            modified["Food"] += 1;
+        },
+        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Nuts"],
+        "visible":(rC,more) => more["actionCount"]["Gather Nuts"],
+        "info":(rC)=>{
+            let message = ["Good for food and protein."];
+            if (!rC["Carrion"]) {
+                message = message.concat(["You need Nuts."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Gather Eggs",
         "pane":"Resources",
         "effect":(modified) => {
             modified["Eggs"] += 1;
-            modified["Illness"] += 1;
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Hills"], 0.25)/(1+rC["Eggs"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Hills"],
@@ -372,9 +476,30 @@ export const actions01 = [
         }
     },
     {
+        "name":"Eat Eggs",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Eggs"] -= 1;
+            modified["Illness"] += 1;
+            modified["Food"] += 1;
+        },
+        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Eggs"],
+        "visible":(rC,more) => more["actionCount"]["Gather Eggs"],
+        "info":(rC)=>{
+            let message = ["A good source of protein, but raw, wild eggs still make you sick."];
+            if (!rC["Carrion"]) {
+                message = message.concat(["You need Eggs."]);
+            }
+            return message;
+        }
+    },
+    {
         "name":"Pick Berries",
         "pane":"Resources",
-        "effect":(modified) => modified["Berries"] += 1,
+        "effect":(modified) => {
+            modified["Berries"] += 1;
+        },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["River"], 0.25)/(1+rC["Berries"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["River"],
         "visible":(rC) => rC["River"],
@@ -382,6 +507,25 @@ export const actions01 = [
             let message = ["Pick berries. Faster with more Gatherers, River."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["You need a Gatherer."]);
+            }
+            return message;
+        }
+    },
+    {
+        "name":"Eat Berries",
+        "pane":"Resources",
+        "effect":(modified) => {
+            modified["Berries"] -= 1;
+            modified["Illness"] += 1;
+            modified["Food"] += 1;
+        },
+        "speed":(rC)=>{return 1/(1+rC["Food"])},
+        "canExecute":(rC)=>rC["Berries"],
+        "visible":(rC,more) => more["actionCount"]["Pick Berries"],
+        "info":(rC)=>{
+            let message = ["A nice treat."];
+            if (!rC["Berries"]) {
+                message = message.concat(["You need Berries."]);
             }
             return message;
         }

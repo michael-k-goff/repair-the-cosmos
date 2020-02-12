@@ -24,7 +24,6 @@ export const timeLeft = (actionProgress, resourceCount, action) => {
 
 export const timeLeftString = (time_left) => {
     time_left = Math.round(time_left);
-    console.log(time_left);
     let time_left_string = time_left ? "" : "0s ";
     if (time_left >= 24*60*60) {
         time_left_string += `${Math.floor(time_left/(24*60*60))}d `;

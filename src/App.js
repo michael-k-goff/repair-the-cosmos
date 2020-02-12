@@ -18,6 +18,7 @@ function App() {
     ] = useGameState();
     const [saveCycle, setSaveCycle] = useState(0);
     const [justLoaded, setJustLoaded] = useState(1);
+    const [lastFrameTime, setLastFrameTime] = useState(new Date().getTime());
     if (justLoaded) {
         setJustLoaded(0);
         loadGame(setResourceCount, setActionProgress, setStory, more, window);
@@ -25,11 +26,13 @@ function App() {
     // Game loop
     const ms = 30; // milliseconds per interval.
     useInterval(()=> {
+        let curTime = new Date().getTime();
+        setLastFrameTime(curTime)
         updateActionProgress(
             resourceCount, setResourceCount,
             actionProgress, setActionProgress,
             story, setStory, more,
-            ms);
+            curTime - lastFrameTime);
         const newSaveCycle = (saveCycle+1)%10;
         setSaveCycle(newSaveCycle);
         if (newSaveCycle === 0) {

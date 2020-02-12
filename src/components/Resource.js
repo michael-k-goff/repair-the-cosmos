@@ -13,7 +13,7 @@ const Resource = ({resource, count, resourceCount, setResourceCount, hover, setH
                 {resource[0]}
             </StyledResourceName>
             <StyledResourceCount>
-                {count}
+                {Math.floor(count)}
             </StyledResourceCount>
         </StyledResourceBox>
     )

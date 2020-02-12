@@ -86,7 +86,7 @@ export const StyledResourceName = styled.div`
 
 export const StyledResourceCount = styled.div`
     position:absolute;
-    left:200px;
+    left:220px;
 `
 
 export const StyledResourceBox = styled.div`

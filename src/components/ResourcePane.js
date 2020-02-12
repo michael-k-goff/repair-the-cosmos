@@ -11,7 +11,7 @@ const RandADisplay = ({pane,
                 hover, setHover, more
 }) => {
     const display_resources_by_pane = resources_by_pane[pane].filter((r) => {
-        return resourceCount[r[0]];
+        return resourceCount[r[0]] >= 1;
     }).sort((a,b)=>{
         if (a[3]["sort_key"]<b[3]["sort_key"]) {return -1;}
         if (a[3]["sort_key"]==b[3]["sort_key"]) {return 0;}
