@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyledStoryPane, StyledStoryGap} from './styles/StyledStoryPane';
 
-const StoryPane = ({story, setStory}) => {
+const StoryPane = ({story}) => {
     return (
         <StyledStoryPane>
             {story.map((paragraph,i) =>

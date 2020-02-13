@@ -1,140 +1,180 @@
 // Component for a single action
 
-import React, {useState} from 'react';
+import React from 'react';
 import {
     StyledActionButton,
     StyledActionProgress,
     StyledCancelButton,
     StyledToggleButton,
     StyledRepeatButton,
-    StyledAutoActionName,
-    StyledAutoActionProgress,
-    StyledAutoActionProgressContainer
+    StyledActionBox,
+    StyledActionButtonBox,
+    StyledActionProgressBox,
+    StyledActionButtonBox2,
+    StyledLineClear
 }
-    from './styles/StyledResourcePane';
+    from './styles/StyledAction';
 
-const progress_to_pct = (prog) => {
-    const pct = (100-100*prog["timeLeft"])
-    return pct.toFixed(2).toString()+"%"
-}
-
-const Action = ({action,
-            resourceCount, setResourceCount,
-            actionProgress, setActionProgress,
-            hover, setHover, more
-}) => {
-    // Using hooks to keep track of whether we are hovering because evidently neither
-    // Styled components nor JSX can handle hover effects despite claims on the Internet
-    // that they can. This is an unnecessarily convolution solution and the fact that I
-    // feel compelled to do this causes me to have negative feelings about React, CSS,
-    // and really society in general.
-    const [mainHover, setMainHover] = useState(0);
-    const [repeatHover, setRepeatHover] = useState(0);
+const ConditionalActionButton = ({action, gameState, enabled}) => {
     const handleClick = () => {
-        if (!action["canExecute"](resourceCount,more) || action["name"] in actionProgress) {
+        if (!action["canExecute"](gameState.resourceCount,gameState) || action["name"] in gameState.actionProgress) {
             return;
         }
         // Now setting the new action via staging rather than directly
-        more["setStaging"]({"action":action,"operation":"One"});
+        gameState.setStaging({"action":action,"operation":"One"});
     }
-    const handleClickRepeat = () => {
-        if (!action["canExecute"](resourceCount,more)) {
-            return;
-        }
-        // Now setting the new action via staging rather than directly
-        more["setStaging"]({"action":action,"operation":"Repeat"});
-        setRepeatHover(0);
-    }
-    const handleCancelClick = () => {
-        // Now canceling via staging
-        more["setStaging"]({"action":action,"operation":"Cancel"});
-    }
-    const handleRepeatToggle = () => {
-        more["setStaging"]({"operation":"RepeatToggle","action":action});
-    }
-    const enabled = action["canExecute"](resourceCount,more) && !(action["name"] in actionProgress);
-    const count = more["actionCount"][action["name"]];
-    const actionButtonColors = (hover_var) => {
-        let brightness = Math.sin(new Date().getTime()/500)
-        let bg =
-            (hover_var && enabled)
-            ?
-                "#e7e7e7"
-            :
-                enabled
-                ? // `rgb(${Math.floor(128+128*brightness)},${Math.floor(221+35*brightness},${Math.floor(198+58*brightness})
-                    !count
-                    ?
-                        (`rgb(${Math.floor(128+128*brightness)},${Math.floor(221+35*brightness)},${Math.floor(198+58*brightness)})`)
-                    :
-                        ("rgb(0,186,140)")
-                :
-                    "#77DABC"
-        return {
-            color: enabled ? "#000000" : "#777777",
-            'backgroundColor': bg
-        }
-    };
-    if (!(action["name"] in actionProgress) && action["auto"]) {
-        return <div/>;
-    }
-    // Auto actions
-    if (action["auto"]) {
+
+    if (!(action.auto)) {
         return (
-            <div onMouseOver={()=>setHover(action)}>
-                <StyledAutoActionName>
-                    {action["name"]}
-                </StyledAutoActionName>
-                <StyledAutoActionProgressContainer>
-                    <StyledAutoActionProgress value={1-actionProgress[action["name"]]["timeLeft"]} max={1}/>
-                </StyledAutoActionProgressContainer>
-            </div>
-        )
-    }
-    // Normal actions
-    return (
-        <div onMouseOver={()=>setHover(action)}>
             <StyledActionButton
-                style={actionButtonColors(mainHover)}
-                count={more["actionCount"][action["name"]]}
+                count={gameState.actionCount[action["name"]]}
                 enabled={enabled}
                 onClick={handleClick}
-                onMouseOver={()=>setMainHover(1)}
-                onMouseLeave={()=>setMainHover(0)}
             >
                 {action["name"]}
             </StyledActionButton>
+        );
+    }
+    else {
+        return (
+            <>
+            </>
+        )
+    }
+}
 
-            {action["name"] in actionProgress ?
-                <StyledActionProgress value={1-actionProgress[action["name"]]["timeLeft"]} max={1}/>:
-            ""}
+const ConditionalRepeatButton = ({action, gameState, enabled}) => {
+    const handleClickRepeat = () => {
+        if (!action["canExecute"](gameState.resourceCount,gameState)) {
+            return;
+        }
+        // Now setting the new action via staging rather than directly
+        gameState.setStaging({"action":action,"operation":"Repeat"});
+    }
 
-            {action["name"] in actionProgress ?
-                <StyledCancelButton onClick={handleCancelClick}>
-                    Cancel
-                </StyledCancelButton>
-                :
-            ""}
-            {action["name"] in actionProgress ?
-                <StyledToggleButton onClick={handleRepeatToggle}>
-                    Repeat: {actionProgress[action["name"]]["repeat"]?"ON":"OFF"}
-                </StyledToggleButton>
-                :
-            ""}
-            {!(action["name"] in actionProgress) ?
-                <StyledRepeatButton
-                    style={actionButtonColors(repeatHover)}
-                    count={more["actionCount"][action["name"]]}
-                    enabled={action["canExecute"](resourceCount,more)}
-                    onClick={handleClickRepeat}
-                    onMouseOver={()=>setRepeatHover(1)}
-                    onMouseLeave={()=>setRepeatHover(0)}
-                >
-                    Repeat
-                </StyledRepeatButton>:
-            ""}
-        </div>
+    if (action["name"] in gameState.actionProgress || action.auto) {
+        return (
+            <>
+            </>
+        );
+    }
+    return (
+        <StyledRepeatButton
+            count={gameState.actionCount[action["name"]]}
+            enabled={enabled}
+            onClick={handleClickRepeat}
+        >
+            Repeat
+        </StyledRepeatButton>
+    );
+}
+
+const ConditionalButtonBox = ({action, gameState}) => {
+    // Just the name here for automatic actions
+    if (action.auto) {
+        return (
+            <>
+                {action.name}
+            </>
+        );
+    }
+
+    const enabled = action["canExecute"](gameState.resourceCount,gameState) && !(action["name"] in gameState.actionProgress);
+
+    return (
+        <>
+            <ConditionalActionButton action={action} gameState={gameState} enabled={enabled} />
+            <ConditionalRepeatButton action={action} gameState={gameState} enabled={enabled} />
+        </>
     )
 }
 
-export default Action;
+const ConditionalButtonBox2 = ({action, gameState}) => {
+    // Nothing here for actions not in progress or automatic actions
+    if (!(action.name in gameState.actionProgress) || action.auto) {
+        return (
+            <>
+            </>
+        );
+    }
+
+    const handleCancelClick = () => {
+        // Now canceling via staging
+        gameState.setStaging({"action":action,"operation":"Cancel"});
+    }
+    const handleRepeatToggle = () => {
+        gameState.setStaging({"operation":"RepeatToggle","action":action});
+    }
+
+    return (
+        <>
+            <StyledCancelButton onClick={handleCancelClick}>
+                Cancel
+            </StyledCancelButton>
+            <StyledToggleButton onClick={handleRepeatToggle}>
+                Repeat: {gameState.actionProgress[action["name"]]["repeat"]?"ON":"OFF"}
+            </StyledToggleButton>
+        </>
+    );
+}
+
+const ConditionalProgressBar = ({action, gameState}) => {
+    if (!(action["name"] in gameState.actionProgress)) {
+        return (
+            <>
+            </>
+        );
+    }
+    const prog_value = 1-gameState.actionProgress[action["name"]]["timeLeft"]
+    return <StyledActionProgress value={prog_value} max={1}/>
+}
+
+// Actions, assuming visibility. This component handles both manual and automatic actions.
+const Action = ({action, gameState}) => {
+    const handleMouseOver = ()=>gameState.setHover(action);
+
+    return (
+        <StyledActionBox onMouseOver={handleMouseOver}>
+            <StyledActionButtonBox>
+                <ConditionalButtonBox action={action} gameState={gameState} />
+            </StyledActionButtonBox>
+
+            <StyledActionProgressBox>
+                <ConditionalProgressBar action={action} gameState={gameState} />
+            </StyledActionProgressBox>
+
+            <StyledActionButtonBox2>
+                <ConditionalButtonBox2 action={action} gameState={gameState} />
+            </StyledActionButtonBox2>
+
+            <StyledLineClear/>
+        </StyledActionBox>
+    )
+}
+
+const ConditionalAction = ({action, gameState}) => {
+    // Actions that are not visible
+    if ("visible" in action ?
+        !action["visible"](gameState.resourceCount,gameState) :
+        !action["canExecute"](gameState.resourceCount,gameState)
+    ) {
+        return (
+            <>
+            </>
+        )
+    }
+
+    // Auto actions that are not currently running
+    if (!(action["name"] in gameState.actionProgress) && action["auto"]) {
+        return(
+            <>
+            </>
+        );
+    }
+
+    return (
+        <Action action={action} gameState={gameState} />
+    );
+}
+
+export default ConditionalAction;

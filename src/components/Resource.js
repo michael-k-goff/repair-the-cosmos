@@ -3,10 +3,12 @@
 import React from 'react';
 import {StyledResourceName, StyledResourceCount, StyledResourceBox} from './styles/StyledResourcePane';
 
-const Resource = ({resource, count, resourceCount, setResourceCount, hover, setHover}) => {
+const Resource = ({resource, count, gameState}) => {
+    const handleMouseOver = ()=>gameState.setHover(resource[2]);
+
     return (
         <StyledResourceBox
-            onMouseOver={()=>setHover(resource[2])}
+            onMouseOver={handleMouseOver}
             character={"character" in resource[3] ? resource[3]["character"] : ""}
         >
             <StyledResourceName>

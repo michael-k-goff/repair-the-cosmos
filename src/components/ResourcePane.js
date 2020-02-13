@@ -2,81 +2,69 @@ import React from 'react';
 import {StyledResourcePane, StyledResourceHeader, StyledResourcePaneDivider} from './styles/StyledResourcePane';
 import {resources_by_pane, actions_by_pane} from '../assets.js';
 import Resource from './Resource.js';
-import Action from './Action.js';
+import ConditionalAction from './Action.js';
 import Settings from './Settings.js';
 
-const RandADisplay = ({pane,
-                resourceCount, setResourceCount,
-                actionProgress, setActionProgress,
-                hover, setHover, more
-}) => {
-    const display_resources_by_pane = resources_by_pane[pane].filter((r) => {
-        return resourceCount[r[0]] >= 1;
-    }).sort((a,b)=>{
-        if (a[3]["sort_key"]<b[3]["sort_key"]) {return -1;}
-        if (a[3]["sort_key"]==b[3]["sort_key"]) {return 0;}
-        if (a[3]["sort_key"]>b[3]["sort_key"]) {return 1;}
-    });
-    const display_actions_by_pane = actions_by_pane[pane].filter((a) => {
-        return "visible" in a ? a["visible"](resourceCount,more) : a["canExecute"](resourceCount,more);
-    }).sort((a,b)=>{
-        if (a["sort_key"]<b["sort_key"]) {return -1;}
-        if (a["sort_key"]==b["sort_key"]) {return 0;}
-        if (a["sort_key"]>b["sort_key"]) {return 1;}
+// Display all Resources for the pane. Displays conditionally on the pane.
+const ResourceDisplay = ({pane, gameState}) => {
+    if (!(pane in resources_by_pane)) {
+        return(
+            <>
+            </>
+        )
+    }
+    const display_resources_by_pane = resources_by_pane[gameState.pane].filter((r) => {
+        return gameState.resourceCount[r[0]] >= 1;
     });
     return (
-        <div>
-            {display_actions_by_pane.map((a) =>
-                <Action action={a} key={"action_"+a["name"]}
-                    resourceCount={resourceCount} setResourceCount={setResourceCount}
-                    actionProgress={actionProgress} setActionProgress={setActionProgress}
-                    hover={hover} setHover={setHover} more={more}
+        <>
+            {display_resources_by_pane.map((r) =>
+                <Resource
+                    resource={r}
+                    count={gameState.resourceCount[r[0]]}
+                    key={"resource_"+r[0]}
+                    gameState={gameState}
                 />
             )}
+        </>
+    );
+}
 
-            <StyledResourcePaneDivider />
-
-            {display_resources_by_pane.map((r) =>
-                <Resource resource={r}
-                    count={resourceCount[r[0]]} resourceCount={resourceCount}
-                    setResourceCount={setResourceCount}
-                    hover={hover} setHover={setHover}
-                    key={"resource_"+r[0]} />
+// Display all Action for the pane. Displays conditionally on the pane.
+const ActionDisplay = ({pane, gameState}) => {
+    if (!(pane in actions_by_pane)) {
+        return(
+            <>
+            </>
+        )
+    }
+    return (
+        <>
+            {actions_by_pane[gameState.pane].map((a) =>
+                <ConditionalAction action={a} key={"action_"+a["name"]} gameState={gameState} />
             )}
-        </div>
+        </>
+    );
+}
+
+const RandADisplay = ({gameState}) => {
+    return (
+        <>
+            <ActionDisplay pane={gameState.pane} gameState={gameState} />
+            <StyledResourcePaneDivider />
+            <ResourceDisplay pane={gameState.pane} gameState={gameState} />
+        </>
     )
 }
 
-const ResourcePane = ({pane,
-                resourceCount, setResourceCount,
-                actionProgress, setActionProgress,
-                hover, setHover, setStory, more
-}) => {
+const ResourcePane = ({gameState}) => {
     return (
         <StyledResourcePane>
             <StyledResourceHeader>
-                {pane}
+                {gameState.pane}
             </StyledResourceHeader>
-            {(()=>{
-                if (pane in resources_by_pane) {
-                    return <RandADisplay
-                        pane={pane}
-                        resourceCount={resourceCount} setResourceCount={setResourceCount}
-                        actionProgress={actionProgress} setActionProgress={setActionProgress}
-                        hover={hover} setHover={setHover} more={more}
-                    />
-                }
-            })()}
-            {(()=> {
-                if (pane === "Settings") {
-                    return <Settings
-                        pane={pane}
-                        resourceCount={resourceCount} setResourceCount={setResourceCount}
-                        actionProgress={actionProgress} setActionProgress={setActionProgress}
-                        hover={hover} setHover={setHover} setStory={setStory} more={more}
-                    />
-                }
-            })()}
+            <RandADisplay gameState={gameState}/>
+            <Settings pane={gameState.pane} gameState={gameState} />
         </StyledResourcePane>
     )
 }

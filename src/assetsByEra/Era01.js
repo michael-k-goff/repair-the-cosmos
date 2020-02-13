@@ -198,7 +198,7 @@ export const actions01 = [
         "canExecute":(rC)=>rC["Brain Size"] ? (rC["Brain Size"] < 10 && rC["Protein"]>=rC["Brain Size"]+1) : rC["Protein"]>=1,
         "visible":(rC,more) => more["actionCount"]["Brain Expansion"] || rC["Protein"],
         "info":(rC)=>{
-            let message = ["Evolved into hominids with larger brains. Grows faster with more Protein."];
+            let message = ["Evolve into hominids with larger brains. Grows faster with more Protein."];
             if (rC["Protein"] < (rC["Brain Size"]?rC["Brain Size"]+1 : 1)) {
                 message = message.concat(["You need more Protein."]);
             }
