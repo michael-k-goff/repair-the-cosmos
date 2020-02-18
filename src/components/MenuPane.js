@@ -8,24 +8,24 @@ import {resource_panes, resources_by_pane, actions_by_pane} from '../assets.js';
 const ConditionalMenuButton = ({r, gameState}) => {
     // Determine whether to display this button
     let doDisplay = false;
-    for (var i=0; i<resources_by_pane[r[0]].length; i++) {
-        let res = resources_by_pane[r[0]][i][0];
+    for (var i=0; i<resources_by_pane[r.name].length; i++) {
+        let res = resources_by_pane[r.name][i][0];
         if (res in gameState.resourceCount && gameState.resourceCount[res]) {
             doDisplay = true;
         }
     }
-    for (i=0; i<actions_by_pane[r[0]].length; i++) {
-        let a = actions_by_pane[r[0]][i];
+    for (i=0; i<actions_by_pane[r.name].length; i++) {
+        let a = actions_by_pane[r.name][i];
         if ("visible" in a ? a["visible"](gameState.resourceCount,gameState) : a["canExecute"](gameState.resourceCount,gameState)) {
             doDisplay = true;
         }
     }
 
     // Button actions
-    const handleOnClick = ()=>gameState.setPane(r[0])
-    const handleMouseOver = ()=>gameState.setHover(r[1])
+    const handleOnClick = ()=>gameState.setPane(r.name)
+    const handleMouseOver = ()=>gameState.setHover(r.desc)
 
-    const isCurrentPane = r[0]===gameState.pane;
+    const isCurrentPane = r.name===gameState.pane;
 
     if (doDisplay) {
         return (
@@ -34,7 +34,7 @@ const ConditionalMenuButton = ({r, gameState}) => {
                 onClick={handleOnClick}
                 onMouseOver={handleMouseOver}
             >
-                {r[0]}
+                {r.name}
             </StyledPaneButton>
         )
     }
@@ -57,7 +57,7 @@ const MenuPane = ({gameState}) => {
             {resource_panes.map((r) =>
                 <ConditionalMenuButton
                     r={r}
-                    key={r[0]}
+                    key={r.name}
                     gameState={gameState}
                 >
                     {r[0]}

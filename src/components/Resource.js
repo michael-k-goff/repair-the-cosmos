@@ -4,15 +4,15 @@ import React from 'react';
 import {StyledResourceName, StyledResourceCount, StyledResourceBox} from './styles/StyledResourcePane';
 
 const Resource = ({resource, count, gameState}) => {
-    const handleMouseOver = ()=>gameState.setHover(resource[2]);
+    const handleMouseOver = ()=>gameState.setHover(resource.desc);
 
     return (
         <StyledResourceBox
             onMouseOver={handleMouseOver}
-            character={"character" in resource[3] ? resource[3]["character"] : ""}
+            character={"character" in resource ? resource.character : ""}
         >
             <StyledResourceName>
-                {resource[0]}
+                {resource.name}
             </StyledResourceName>
             <StyledResourceCount>
                 {Math.floor(count)}

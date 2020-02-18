@@ -50,7 +50,7 @@ export const actions01 = [
     {
         "name":"Reproduce",
         "pane":"Population",
-        "effect":(modified, setStory) => {
+        "effect":(modified, gameState) => {
             if (modified["People"] >= 10) {
                 modified["Food"] -= 1;
             }
@@ -61,7 +61,7 @@ export const actions01 = [
                 modified["Infant Mortality"] -= 1;
             }
             if (modified["People"]===10 && !modified["Savannah"]) {
-                setStory(["Great work, your band is growing. Now it is time to specialize.","I suggest you train a scout so you can explore your surroundings."])
+                gameState.setStory(["Great work, your band is growing. Now it is time to specialize.","I suggest you train a scout so you can explore your surroundings."])
             }
         },
         "speed":(rC) => {
@@ -84,10 +84,12 @@ export const actions01 = [
     {
         "name":"Train Scout",
         "pane":"Population",
-        "effect":(modified, setStory) => {
+        "effect":(modified, gameState) => {
             modified["Scout"] += 1;
             if (modified["Scout"] === 1) {
-                setStory(["Now that you have a scout, head over to the Territory tab and explore your surroundings."])
+                gameState.setStory(
+                    ["Now that you have a scout, head over to the Territory tab and explore your surroundings."]
+                );
             }
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Scout"])},
@@ -245,10 +247,10 @@ export const actions01 = [
     {
         "name":"Explore Savannah",
         "pane":"Territory",
-        "effect":(modified, setStory) => {
+        "effect":(modified, gameState) => {
             modified["Savannah"] += 1;
             if (modified["Savannah"]===1) {
-                setStory(["You have discovered some open Savannah. Now you should head over to the Resources tab and start gathering some material. You are well on your way to repairing the cosmos."])
+                gameState.setStory(["You have discovered some open Savannah. Now you should head over to the Resources tab and start gathering some material. You are well on your way to repairing the cosmos."])
             }
         },
         "speed":(rC) => {return 0.2*Math.sqrt(rC["Scout"])/(1+rC["Savannah"])},
@@ -717,9 +719,9 @@ export const actions01 = [
     {
         "name":"Form a Tribe",
         "pane":"Society",
-        "effect":(modified, setStory) => {
+        "effect":(modified, gameState) => {
             modified["Tribe"] += 1;
-            setStory(["Your band has grown into a full-fledged tribe. This is the end of the current demo. Thanks for playing, and please check back later.","You can continue building your population and resources if you so desire."]);
+            gameState.setStory(["Your band has grown into a full-fledged tribe. This is the end of the current demo. Thanks for playing, and please check back later.","You can continue building your population and resources if you so desire."]);
         },
         "speed":(rC) => {return 0.001*Math.pow(rC["People"]*(rC["Valley"]+rC["River"])*(rC["Fire Pit"]+rC["Grain Storage"]), 1/6)/(1+rC["Tribe"])},
         "canExecute":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"] && rC["People"]>=50 && rC["Brain Size"]>=10,

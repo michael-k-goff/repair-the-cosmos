@@ -6,8 +6,8 @@ import {useState} from 'react';
 import {actionEffectWrapper, actions, auto_actions} from './assets.js';
 
 export const speedMod = (gameState, add_one = 0) => {
-    const num_actions = Math.max(1,gameState.numActions);
-    return Math.pow(1/(num_actions+add_one), 0.8);
+    const num_actions = Math.max(1,gameState.numActions+add_one);
+    return Math.pow(1/(num_actions), 0.8);
 }
 
 // Like speedMod, but this one uses the number of actions directly
@@ -96,7 +96,7 @@ const actionDone = (gameState, action, cancelAll) => {
 
 const checkActionDone = (gameState, key, prog) => {
     if (prog["timeLeft"] <= 0) {
-        gameState.resourceCount = actionEffectWrapper(gameState.resourceCount, gameState.setResourceCount, gameState.setStory, prog["action"], gameState.actionCount)();
+        actionEffectWrapper(gameState, prog["action"])();
         if (prog["repeat"] && prog["action"]["canExecute"](gameState.resourceCount,gameState)) {
             prog["timeLeft"] = 1;
         }
@@ -195,7 +195,7 @@ export const loadGame = (gameState, window) => {
 export const init_resource_count = () => {
     let irc = {};
     for (var key in resources) {
-        irc[resources[key][0]] = 0;
+        irc[resources[key].name] = 0;
     }
     irc["People"] = 2; // Adam and Eve
     irc["Garden of Eden"] = 1;
@@ -213,7 +213,7 @@ export const init_hover = "Watch this space for more info.";
 
 export const useGameState = () => {
     // Currently displayed pane
-    const [pane, setPane] = useState(resource_panes[0][0]);
+    const [pane, setPane] = useState(resource_panes[0].name);
 
     // Counts of all resources
     const [resourceCount, setResourceCount] = useState(init_resource_count());

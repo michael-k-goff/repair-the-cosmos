@@ -14,15 +14,15 @@ const ResourceDisplay = ({pane, gameState}) => {
         )
     }
     const display_resources_by_pane = resources_by_pane[gameState.pane].filter((r) => {
-        return gameState.resourceCount[r[0]] >= 1;
+        return gameState.resourceCount[r.name] >= 1;
     });
     return (
         <>
             {display_resources_by_pane.map((r) =>
                 <Resource
                     resource={r}
-                    count={gameState.resourceCount[r[0]]}
-                    key={"resource_"+r[0]}
+                    count={gameState.resourceCount[r.name]}
+                    key={"resource_"+r.name}
                     gameState={gameState}
                 />
             )}
