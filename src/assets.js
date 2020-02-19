@@ -9,13 +9,22 @@ export const resource_panes = [
     {"name":"Resources","desc":"Gather natural resources."},
     {"name":"Buildings","desc":"Build stuff."},
     {"name":"Society","desc":"Manage government, religion, etc."},
-    {"name":"Military","desc":"Take territory, resources, etc."}
+    {"name":"Military","desc":"Take territory, resources, etc."},
+    {"name":"Cancel Actions","desc":"Cancel all actions currently in progress."},
+    {"name":"Cancel Repeats","desc":"Cancel all repeats. Actions in progress will be allowed to continue but will not repeat."},
+    {"name":"Info & Settings","desc":"See general game info and settings."}
 ]
+
+// Convert to a dictionary
+export const resource_pane_dict = {}
+for (var i=0; i<resource_panes.length; i++) {
+    resource_pane_dict[resource_panes[i].name] = resource_panes[i];
+}
 
 export const resources = resources01;
 // Add extra characteristic dictionaries to the end of each resource
 // They should have been dictionaries from the beginning. Oh well.
-for (var i=0; i<resources.length;i++) {
+for (i=0; i<resources.length;i++) {
     if (resources[i][0]) { // Convert arrays to more proper objects
         let new_resource = {"name":resources[i][0], "pane":resources[i][1],"desc":resources[i][2]}
         if (resources[i][3]) {
@@ -29,9 +38,21 @@ for (var i=0; i<resources.length;i++) {
     resources[i].sort_key = i + ((resources[i].character==="bad")?1000000:0);
 }
 
+// Convert to a dictionary
+export const resource_dict = {}
+for (i=0; i<resources.length; i++) {
+    resource_dict[resources[i].name] = resources[i];
+}
+
 export const actions = actions01;
 for (i=0; i<actions.length; i++) {
     actions[i].sort_key = i+((actions[i].auto)?1000000:0);
+}
+
+// Convert to a dictionary
+export const actions_dict = {}
+for (i=0; i<actions.length; i++) {
+    actions_dict[actions[i].name] = actions[i];
 }
 
 // For improved performance, organize and sort resources and actions by pane.

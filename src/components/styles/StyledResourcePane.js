@@ -17,21 +17,6 @@ export const StyledResourceHeader = styled.div`
     margin-bottom: 20px;
 `;
 
-export const StyledResourceName = styled.div`
-    position:absolute;
-    left:0;
-`
-
-export const StyledResourceCount = styled.div`
-    position:absolute;
-    left:220px;
-`
-
-export const StyledResourceBox = styled.div`
-    height:20px;
-    color: ${props => ({"bad":"#FF0000","":"FFFFFF"}[props.character])};
-`
-
 export const StyledResourcePaneDivider = styled.div`
     height:50px;
 `

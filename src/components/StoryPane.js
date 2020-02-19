@@ -1,13 +1,14 @@
 import React from 'react';
 import {StyledStoryPane, StyledStoryGap} from './styles/StyledStoryPane';
+import {styledText} from '../textStyling';
 
-const StoryPane = ({story}) => {
+const StoryPane = ({story,gameState}) => {
     return (
         <StyledStoryPane>
             {story.map((paragraph,i) =>
                 <div key={i}>
                     <p>
-                        {paragraph}
+                        {styledText(paragraph,gameState)}
                     </p>
                     <StyledStoryGap/>
                 </div>

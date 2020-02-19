@@ -1,5 +1,7 @@
 // The first era, corresponding roughly to the Lower Paleolithic.
 
+import {addLog} from "../gameLogic.js";
+
 export const resources01 = [
     ["People","Population","Your current population. The more the merrier."],
     ["Scout","Population","Scouts help you find new land."],
@@ -51,17 +53,24 @@ export const actions01 = [
         "name":"Reproduce",
         "pane":"Population",
         "effect":(modified, gameState) => {
+            let message1 = "";
             if (modified["People"] >= 10) {
                 modified["Food"] -= 1;
+                message1 = ", and you ate 1 _Food_"
             }
             let success = Math.random() > modified["Infant Mortality"]/100 ? 1:0;
             if (!modified["Infant Mortality"]) {success = 1}
             modified["People"] += success;
+            let message2 = "You gained 1 _People_"+message1+"."
             if (!success && modified["Infant Mortality"] >= 31) {
                 modified["Infant Mortality"] -= 1;
+                addLog("_Infant Mortality_ has decreased by 1.");
+                message2 = "Childbirth was unsuccessful "+message2+".";
             }
+            addLog(message2,gameState);
             if (modified["People"]===10 && !modified["Savannah"]) {
-                gameState.setStory(["Great work, your band is growing. Now it is time to specialize.","I suggest you train a scout so you can explore your surroundings."])
+                addLog("I suggest you train a _Scout_ so you can explore your surroundings.",gameState);
+                addLog("Great work, your band is growing. Now it is time to specialize.",gameState);
             }
         },
         "speed":(rC) => {
@@ -74,9 +83,9 @@ export const actions01 = [
         },
         "visible":(rC)=>1,
         "info":(rC)=>{
-            let message = ["Grow your population. Faster with more food."];
+            let message = ["Add 1 _People_ to your band. Faster with more _Food_, _Wood Shelter_."];
             if (rC["People"] >= 10 && !rC["Food"]) {
-                message = message.concat(["You need food to grow further."]);
+                message = message.concat(["!You need more _Food_."]);
             }
             return message;
         }
@@ -86,19 +95,18 @@ export const actions01 = [
         "pane":"Population",
         "effect":(modified, gameState) => {
             modified["Scout"] += 1;
+            addLog("Trained 1 _Scout_.",gameState);
             if (modified["Scout"] === 1) {
-                gameState.setStory(
-                    ["Now that you have a scout, head over to the Territory tab and explore your surroundings."]
-                );
+                addLog("Now that you have a scout, head over to the Territory tab and explore your surroundings.",gameState);
             }
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Scout"])},
         "canExecute":(rC) => {return rC["People"] > 9+rC["Scout"] * 2},
         "visible":(rC) => rC["People"] >= 10,
         "info":(rC)=>{
-            let message = ["Train scouts to find more territory. Faster with more People."]
+            let message = ["Train _Scout_ to find more territory. Faster with more _People_."]
             if (rC["People"] <= 9+rC["Scout"] * 2) {
-                message = message.concat(["You need more people."]);
+                message = message.concat(["You need more _People_."]);
             }
             return message;
         }
@@ -106,16 +114,17 @@ export const actions01 = [
     {
         "name":"Train Gatherer",
         "pane":"Population",
-        "effect":(modified) => {
+        "effect":(modified,gameState) => {
             modified["Gatherer"] += 1;
+            addLog("Trained 1 _Gatherer_.",gameState);
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Gatherer"])},
         "canExecute":(rC) => {return rC["People"] > 9+rC["Gatherer"] * 2},
         "visible":(rC) => rC["People"] >= 10,
         "info":(rC)=>{
-            let message = ["Train gatherers to find more food. Faster with more People."];
+            let message = ["Train _Gatherer_ to find more food. Faster with more _People_."];
             if (rC["People"] <= 9+rC["Gatherer"] * 2) {
-                message = message.concat(["You need more people."]);
+                message = message.concat(["You need more _People_."]);
             }
             return message;
         }
@@ -123,22 +132,23 @@ export const actions01 = [
     {
         "name":"Train Woodworker",
         "pane":"Population",
-        "effect":(modified) => {
+        "effect":(modified, gameState) => {
             modified["Wood Worker"] += 1;
+            addLog("Trained 1 _Wood Worker_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Wood"],0.25)/(1+rC["Wood Worker"])},
         "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] > 2+rC["Wood Worker"] * 2},
         "visible":(rC) => rC["Wood"] >= 1,
         "info":(rC)=>{
-            let message = ["Train wood workers to fashion wooden tools. Faster with more People, Wood."];
+            let message = ["Train _Wood Worker_ to fashion wooden tools. Faster with more _People_, _Wood_."];
             if (rC["People"] <= 10+rC["Wood Worker"] * 4) {
-                message = message.concat(["You need more people."]);
+                message = message.concat(["You need more _People_."]);
             }
             if (rC["Wood"] <= 2+rC["Wood Worker"] * 2) {
-                message = message.concat(["You need more Wood."]);
+                message = message.concat(["You need more _Wood_."]);
             }
             if (rC["Brain Size"] < 3) {
-                message = message.concat(["To need to increase Brain Size."]);
+                message = message.concat(["To need to increase _Brain Size_."]);
             }
             return message;
         }
@@ -146,22 +156,23 @@ export const actions01 = [
     {
         "name":"Train Stoneworker",
         "pane":"Population",
-        "effect":(modified) => {
+        "effect":(modified, gameState) => {
             modified["Stone Worker"] += 1;
+            addLog("Trained 1 _Stone Worker_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Rocks"],0.25)/(1+rC["Stone Worker"])},
         "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] > 2+rC["Stone Worker"] * 2},
         "visible":(rC) => rC["Rocks"] >= 1,
         "info":(rC)=>{
-            let message = ["Train stone workers to create and maintain stone tools. Faster with more People, Rocks."];
+            let message = ["Train _Stone Worker_ to create and maintain _Stone Tools_. Faster with more _People_, _Rocks_."];
             if (rC["People"] <= 10+rC["Stone Worker"] * 4) {
-                message = message.concat(["You need more people."]);
+                message = message.concat(["You need more _People_."]);
             }
             if (rC["Rocks"] <= 2+rC["Stone Worker"] * 2) {
-                message = message.concat(["You need more Rocks."]);
+                message = message.concat(["You need more _Rocks_."]);
             }
             if (rC["Brain Size"] < 3) {
-                message = message.concat(["To need to increase Brain Size."]);
+                message = message.concat(["To need to increase _Brain Size_."]);
             }
             return message;
         }
@@ -169,19 +180,20 @@ export const actions01 = [
     {
         "name":"Train Hunter",
         "pane":"Population",
-        "effect":(modified) => {
+        "effect":(modified, gameState) => {
             modified["Hunter"] += 1;
+            addLog("Trained 1 _Hunter_.",gameState);
         },
         "speed":(rC) => {return 0.05*Math.pow( rC["Gatherer"]*(rC["Wood Worker"]+rC["Stone Worker"]) , 0.25)/(1+rC["Hunter"])},
         "canExecute":(rC) => {return rC["Gatherer"] > 2+rC["Hunter"] * 2 && rC["Wood Worker"]+rC["Stone Worker"]>rC["Hunter"]},
         "visible":(rC)=>rC["Wood Worker"] || rC["Stone Worker"],
         "info":(rC)=>{
-            let message = ["Train hunter. Faster with more Gatherers, Wood Workers, Stone Workers."];
+            let message = ["Train _Hunter_. Faster with more _Gatherer_, _Wood Worker_, _Stone Worker_."];
             if (rC["Gatherer"] <= 2+rC["Hunter"] * 2) {
-                message = message.concat(["You need more Gatherers."]);
+                message = message.concat(["You need more _Gatherer_."]);
             }
             if (rC["Wood Worker"]+rC["Stone Worker"]<=rC["Hunter"]) {
-                message = message.concat(["You need more Wood Workers or Stone Workers."]);
+                message = message.concat(["You need more _Wood Worker_ or _Stone Worker_."]);
             }
             return message;
         }
@@ -189,10 +201,11 @@ export const actions01 = [
     {
         "name":"Brain Expansion",
         "pane":"Population",
-        "effect":(modified) => {
+        "effect":(modified, gameState) => {
             modified["Brain Size"] += 1;
             modified["Protein"] -= modified["Brain Size"];
             modified["Infant Mortality"] += 9;
+            addLog(`Expanded _Brain Size_ by 1, consumed ${modified["Brain Size"]} _Protein_, and gained 9 _Infant Mortality_.`,gameState);
         },
         "speed":(rC) => {
             return 0.02*rC["Protein"]/(1+rC["Brain Size"]);
@@ -200,9 +213,9 @@ export const actions01 = [
         "canExecute":(rC)=>rC["Brain Size"] ? (rC["Brain Size"] < 10 && rC["Protein"]>=rC["Brain Size"]+1) : rC["Protein"]>=1,
         "visible":(rC,more) => more["actionCount"]["Brain Expansion"] || rC["Protein"],
         "info":(rC)=>{
-            let message = ["Evolve into hominids with larger brains. Grows faster with more Protein."];
+            let message = ["Evolve into hominids with larger brains. Grows faster with more _Protein_."];
             if (rC["Protein"] < (rC["Brain Size"]?rC["Brain Size"]+1 : 1)) {
-                message = message.concat(["You need more Protein."]);
+                message = message.concat(["You need more _Protein_."]);
             }
             return message;
         }
@@ -220,23 +233,24 @@ export const actions01 = [
         "canExecute":(rC) => rC["People"]>2 && rC["Illness"]>=1,
         "auto":1,
         "info":(rC)=>{
-            return ["Kills a person. Goes faster with more Illness and more people."];
+            return ["Kills 1 _People_. Goes faster with more _Illness_ and more _People_."];
         }
     },
     {
         "name":"Use Herbs",
         "pane":"Population",
-        "effect":(modified) => {
+        "effect":(modified, gameState) => {
             modified["Illness"] -= 1;
             modified["Herbs"] -= 1;
+            addLog("Cured 1 _Illness_ and consumed 1 _Herbs_.",gameState);
         },
         "speed":(rC)=>0.05*rC["Herbs"],
         "canExecute":(rC) => rC["Herbs"] && rC["Illness"]>=1,
         "visible":(rC,more) => more["actionCount"]["Gather Herbs"],
         "info":(rC)=>{
-            let message = ["Apply herbs to cure illness."];
+            let message = ["Apply _Herbs_ to cure _Illness_."];
             if (!rC["Herbs"]) {
-                message = message.concat(["You need to have an Herb."]);
+                message = message.concat(["You need to have an _Herbs_."]);
             }
             if (!rC["Illness"]) {
                 message = message.concat(["None of your people are ill, so there is no reason."]);
@@ -250,24 +264,28 @@ export const actions01 = [
         "effect":(modified, gameState) => {
             modified["Savannah"] += 1;
             if (modified["Savannah"]===1) {
-                gameState.setStory(["You have discovered some open Savannah. Now you should head over to the Resources tab and start gathering some material. You are well on your way to repairing the cosmos."])
+                addLog("You have discovered some open _Savannah_. Now you should head over to the Resources tab and start gathering some material. You are well on your way to repairing the cosmos.",gameState);
             }
+            addLog("Found 1 _Savannah_.",gameState);
         },
         "speed":(rC) => {return 0.2*Math.sqrt(rC["Scout"])/(1+rC["Savannah"])},
         "canExecute":(rC) => rC["Scout"],
-        "info":(rc) => ["Search for Savannah to settle. Faster with more Scouts."]
+        "info":(rc) => ["Search for _Savannah_ to settle. Faster with more _Scout_."]
     },
     {
         "name":"Explore Forest",
         "pane":"Territory",
-        "effect":(modified) => modified["Forest"] += 1,
+        "effect":(modified, gameState) => {
+            modified["Forest"] += 1;
+            addLog("Found 1 _Forest_.",gameState);
+        },
         "speed":(rC) => {return 0.1*Math.sqrt(rC["Scout"])/(1+rC["Forest"])},
         "canExecute":(rC) => rC["Savannah"]>=3,
         "visible":(rC)=>rC["Savannah"],
         "info":(rC)=>{
-            let message = ["Search for Forest to settle. Faster with more Scouts."];
+            let message = ["Search for _Forest_ to settle. Faster with more _Scout_."];
             if (rC["Savannah"] < 3) {
-                message = message.concat(["Explore the Savannah some more first."]);
+                message = message.concat(["Explore the _Savannah_ some more first."]);
             }
             return message;
         }
@@ -275,14 +293,17 @@ export const actions01 = [
     {
         "name":"Explore Hills",
         "pane":"Territory",
-        "effect":(modified) => modified["Hills"] += 1,
+        "effect":(modified, gameState) => {
+            modified["Hills"] += 1;
+            addLog("Found 1 _Hills_.",gameState);
+        },
         "speed":(rC) => {return 0.1*Math.sqrt(rC["Scout"])/(1+rC["Hills"])},
         "canExecute":(rC) => rC["Savannah"]>=3,
         "visible":(rC)=>rC["Savannah"],
         "info":(rC)=>{
-            let message = ["Search for Hills to settle. Faster with more Scouts."];
+            let message = ["Search for _Hills_ to settle. Faster with more _Scout_."];
             if (rC["Savannah"] < 3) {
-                message = message.concat(["Explore the Savannah some more first."]);
+                message = message.concat(["Explore the _Savannah_ some more first."]);
             }
             return message;
         }
@@ -290,14 +311,17 @@ export const actions01 = [
     {
         "name":"Explore Valley",
         "pane":"Territory",
-        "effect":(modified) => modified["Valley"] += 1,
+        "effect":(modified, gameState) => {
+            modified["Valley"] += 1;
+            addLog("Found 1 _Valley_.",gameState);
+        },
         "speed":(rC) => {return 0.07*Math.sqrt(rC["Scout"])/(1+rC["Valley"])},
         "canExecute":(rC) => rC["Savannah"]>=3,
         "visible":(rC)=>rC["Savannah"],
         "info":(rC)=>{
-            let message = ["Search for Valley to settle. Faster with more Scouts."];
+            let message = ["Search for _Valley_ to settle. Faster with more _Scout_."];
             if (rC["Savannah"] < 3) {
-                message = message.concat(["Explore the Savannah some more first."]);
+                message = message.concat(["Explore the _Savannah_ some more first."]);
             }
             return message;
         }
@@ -305,14 +329,17 @@ export const actions01 = [
     {
         "name":"Explore River",
         "pane":"Territory",
-        "effect":(modified) => modified["River"] += 1,
+        "effect":(modified, gameState) => {
+            modified["River"] += 1;
+            addLog("Found 1 _River_.",gameState);
+        },
         "speed":(rC) => {return 0.07*Math.sqrt(rC["Scout"])/(1+rC["River"])},
         "canExecute":(rC) => rC["Savannah"]>=3,
         "visible":(rC)=>rC["Savannah"],
         "info":(rC)=>{
-            let message = ["Search for River to settle. Faster with more Scouts."];
+            let message = ["Search for _River_ to settle. Faster with more _Scout_."];
             if (rC["Savannah"] < 3) {
-                message = message.concat(["Explore the Savannah some more first."]);
+                message = message.concat(["Explore the _Savannah_ some more first."]);
             }
             return message;
         }
@@ -320,7 +347,10 @@ export const actions01 = [
     {
         "name":"Explore Cave",
         "pane":"Territory",
-        "effect":(modified) => modified["Cave"] += 1,
+        "effect":(modified, gameState) => {
+            modified["Cave"] += 1;
+            addLog("Found 1 _Cave_.",gameState);
+        },
         "speed":(rC) => {return 0.05*Math.sqrt(rC["Scout"])/(1+rC["Cave"])},
         "canExecute":(rc) => rc["Hills"],
         "info":(rc) => ["You might find a cave in the side of a hill. Faster with more Scouts."]
@@ -328,16 +358,17 @@ export const actions01 = [
     {
         "name":"Gather Mushrooms",
         "pane":"Resources",
-        "effect":(modified) => {
+        "effect":(modified, gameState) => {
             modified["Wild Mushrooms"] += 1;
+            addLog("Found 1 _Wild Mushrooms_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wild Mushrooms"])},
         "canExecute":(rC) => rC["Gatherer"] && rC["Forest"],
         "visible":(rC) => rC["Forest"],
         "info":(rC)=>{
-            let message = ["It took a long time to learn which ones are edible. Faster with more Gatherers, Forest."];
+            let message = ["It took a long time to learn which ones are edible. Faster with more _Gatherer_, _Forest_."];
             if (!rC["Gatherer"]) {
-                message = message.concat(["You need a Gatherer."]);
+                message = message.concat(["You need a _Gatherer_."]);
             }
             return message;
         }
@@ -345,11 +376,13 @@ export const actions01 = [
     {
         "name":"Consume Mushrooms",
         "pane":"Resources",
-        "effect":(modified)=>{
+        "effect":(modified, gameState)=>{
+            const illness = 2/(Math.max(2,modified["Knowledge of Mushrooms"]))
             modified["Wild Mushrooms"] -= 1;
-            modified["Illness"] += 2/(Math.max(2,modified["Knowledge of Mushrooms"]));
+            modified["Illness"] += illness;
             modified["Food"] += 1;
             modified["Knowledge of Mushrooms"] += ( 1/(1+Math.pow(modified["Knowledge of Mushrooms"],0.7)) );
+            addLog(`Ate 1 _Wild Mushrooms_, got ${illness.toFixed(2)} _Illness_, gained 1 _Food_, and learned 1 _Knowledge of Mushrooms_.`,gameState);
         },
         "speed":(rC) => {return 1/(1+rC["Food"])},
         "canExecute":(rC)=>rC["Wild Mushrooms"],
@@ -357,7 +390,7 @@ export const actions01 = [
         "info":(rC)=>{
             let message = ["Eat a delicious mushroom."];
             if (!rC["Wild Mushrooms"]) {
-                message = message.concat(["You need a Mushroom."]);
+                message = message.concat(["You need a _Wild Mushroom_."]);
             }
             return message;
         }
@@ -721,7 +754,10 @@ export const actions01 = [
         "pane":"Society",
         "effect":(modified, gameState) => {
             modified["Tribe"] += 1;
-            gameState.setStory(["Your band has grown into a full-fledged tribe. This is the end of the current demo. Thanks for playing, and please check back later.","You can continue building your population and resources if you so desire."]);
+            if (modified["Tribe"] === 1) {
+                addLog("You can continue building your population and resources if you so desire.",gameState);
+                addLog("Your band has grown into a full-fledged tribe. This is the end of the current demo. Thanks for playing, and please check back later.",gameState);
+            }
         },
         "speed":(rC) => {return 0.001*Math.pow(rC["People"]*(rC["Valley"]+rC["River"])*(rC["Fire Pit"]+rC["Grain Storage"]), 1/6)/(1+rC["Tribe"])},
         "canExecute":(rC) => rC["Valley"] && rC["River"] && rC["Fire Pit"] && rC["Grain Storage"] && rC["People"]>=50 && rC["Brain Size"]>=10,

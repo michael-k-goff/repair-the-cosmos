@@ -5,7 +5,7 @@ export const StyledStoryPane = styled.div`
     position:absolute;
     top:0vh;
     left:80vw;
-    height:50vh;
+    height:100vh;
     width:20vw;
     padding:10px;
     box-sizing: border-box;

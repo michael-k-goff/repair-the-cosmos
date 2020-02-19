@@ -23,7 +23,8 @@ const ConditionalMenuButton = ({r, gameState}) => {
 
     // Button actions
     const handleOnClick = ()=>gameState.setPane(r.name)
-    const handleMouseOver = ()=>gameState.setHover(r.desc)
+    const handleMouseOver = ()=>gameState.hovers["pane_"+r.name] = 1;
+    const handleMouseLeave = ()=>delete gameState.hovers["pane_"+r.name];
 
     const isCurrentPane = r.name===gameState.pane;
 
@@ -33,6 +34,7 @@ const ConditionalMenuButton = ({r, gameState}) => {
                 current_pane={isCurrentPane}
                 onClick={handleOnClick}
                 onMouseOver={handleMouseOver}
+                onMouseLeave={handleMouseLeave}
             >
                 {r.name}
             </StyledPaneButton>
@@ -48,6 +50,13 @@ const ConditionalMenuButton = ({r, gameState}) => {
 
 const MenuPane = ({gameState}) => {
     let cancelAllClick = ()=>gameState["setStaging"]({"operation":"CancelALL"});
+    // Hovers for the special panes
+    let cancelAllHover = ()=>gameState.hovers["pane_Cancel Actions"] = 1;
+    let cancelAllLeave = ()=>delete gameState.hovers["pane_Cancel Actions"];
+    let cancelRepeatHover = ()=>gameState.hovers["pane_Cancel Repeats"] = 1;
+    let cancelRepeatLeave = ()=>delete gameState.hovers["pane_Cancel Repeats"];
+    let settingsHover = ()=>gameState.hovers["pane_Info & Settings"] = 1;
+    let settingsLeave = ()=>delete gameState.hovers["pane_Info & Settings"];
     return (
         <StyledMenuPane>
             <StyledMenuHeader>
@@ -68,13 +77,15 @@ const MenuPane = ({gameState}) => {
 
             <StyledSettingsButton
                 onClick={cancelAllClick}
-                onMouseOver={()=>gameState.setHover("Cancel all actions currently in progress.")}
+                onMouseOver={cancelAllHover}
+                onMouseLeave={cancelAllLeave}
             >
                 Cancel Actions
             </StyledSettingsButton>
             <StyledSettingsButton
                 onClick={()=>gameState["setStaging"]({"operation":"CancelRepeat"})}
-                onMouseOver={()=>gameState.setHover("Cancel all repeats. Actions in progress will be allowed to continue but will not repeat.")}
+                onMouseOver={cancelRepeatHover}
+                onMouseLeave={cancelRepeatLeave}
             >
                 Cancel Repeats
             </StyledSettingsButton>
@@ -83,7 +94,8 @@ const MenuPane = ({gameState}) => {
 
             <StyledSettingsButton
                 onClick={()=>gameState.setPane("Settings")}
-                onMouseOver={()=>gameState.setHover("See general game info and settings.")}
+                onMouseOver={settingsHover}
+                onMouseLeave={settingsLeave}
             >
                 Info & Settings
             </StyledSettingsButton>

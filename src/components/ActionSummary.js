@@ -21,7 +21,7 @@ const ActionSummary = ({gameState}) => {
                 <p key={k}>
                     {k}: {timeLeftString(timeLeftDict[k])} {
                         gameState.actionProgress[k]["action"]["auto"] ? "(A)" :
-                            gameState.actionProgress[k]["repeat"] ? "(R)":""
+                            gameState.repeat[k] ? "(R)":""
                     }
                 </p>
             ))}

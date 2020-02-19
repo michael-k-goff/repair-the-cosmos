@@ -3,19 +3,25 @@ import './App.css';
 import MenuPane from './components/MenuPane';
 import ResourcePane from './components/ResourcePane';
 import StoryPane from './components/StoryPane';
-import InfoPane from './components/InfoPane';
+import InfoBox from './components/InfoBox';
 import { useInterval } from './useInterval';
 import {updateActionProgress, gameSave, loadGame, useGameState} from './gameLogic.js';
 
 function App() {
+    // Set up state
     const gameState = useGameState();
     const [saveCycle, setSaveCycle] = useState(0);
     const [justLoaded, setJustLoaded] = useState(1);
     const [lastFrameTime, setLastFrameTime] = useState(new Date().getTime());
+    const [mouseX, setMouseX] = useState(0);
+    const [mouseY, setMouseY] = useState(0);
+
+    // Reload game saved in browser local storage.
     if (justLoaded) {
         setJustLoaded(0);
         loadGame(gameState, window);
     }
+
     // Game loop
     const ms = 30; // milliseconds per interval.
     useInterval(()=> {
@@ -28,12 +34,20 @@ function App() {
             gameSave(gameState, window);
         }
     },ms);
+
+    // General functions, such as for tracking mouse position
+    const mouseMoveFunc = (e) => {
+        setMouseX(e.pageX);
+        setMouseY(e.pageY);
+    }
+
+    // Render component
     return (
-        <div className="App">
+        <div className="App" onMouseMove={mouseMoveFunc}>
             <MenuPane gameState={gameState}/>
             <ResourcePane gameState={gameState}/>
-            <StoryPane story={gameState.story} />
-            <InfoPane gameState={gameState}/>
+            <StoryPane story={gameState.story} gameState={gameState} />
+            <InfoBox x={mouseX} y={mouseY} gameState={gameState}/>
         </div>
     );
 }

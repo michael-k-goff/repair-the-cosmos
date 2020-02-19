@@ -25,11 +25,12 @@ const Settings = ({pane, gameState}) => {
             gameReset(gameState);
         }
     }
-    const handleMouseOver = ()=>gameState.setHover("Reset everything. Click four times quickly to make sure you really mean it.");
+    const handleMouseOver = ()=>gameState.hovers["other_Reset everything. Click four times quickly to make sure you really mean it."] = 1;
+    const handleMouseLeave = ()=>delete gameState.hovers["other_Reset everything. Click four times quickly to make sure you really mean it."];
 
     return (
         <div>
-            <StyledResetButton onClick={handleResetClick} onMouseOver={handleMouseOver}>
+            <StyledResetButton onClick={handleResetClick} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
                 Reset
             </StyledResetButton>
             <StyledMenuGap />

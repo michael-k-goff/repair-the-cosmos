@@ -4,20 +4,22 @@ import React from 'react';
 import {
     StyledActionButton,
     StyledActionProgress,
-    StyledCancelButton,
     StyledToggleButton,
-    StyledRepeatButton,
     StyledActionBox,
     StyledActionButtonBox,
     StyledActionProgressBox,
-    StyledActionButtonBox2,
-    StyledLineClear
+    StyledLineClear,
+    StyledInfoButton
 }
     from './styles/StyledAction';
 
 const ConditionalActionButton = ({action, gameState, enabled}) => {
     const handleClick = () => {
-        if (!action["canExecute"](gameState.resourceCount,gameState) || action["name"] in gameState.actionProgress) {
+        if (action["name"] in gameState.actionProgress) {
+            gameState.setStaging({"action":action,"operation":"Cancel"});
+            return;
+        }
+        if (!action["canExecute"](gameState.resourceCount,gameState)) {
             return;
         }
         // Now setting the new action via staging rather than directly
@@ -28,10 +30,14 @@ const ConditionalActionButton = ({action, gameState, enabled}) => {
         return (
             <StyledActionButton
                 count={gameState.actionCount[action["name"]]}
+                active={action.name in gameState.actionProgress}
                 enabled={enabled}
                 onClick={handleClick}
             >
-                {action["name"]}
+                {
+                    enabled ? "Go!" :
+                        action.name in gameState.actionProgress ? "Cancel" : "Can't"
+                }
             </StyledActionButton>
         );
     }
@@ -43,53 +49,56 @@ const ConditionalActionButton = ({action, gameState, enabled}) => {
     }
 }
 
-const ConditionalRepeatButton = ({action, gameState, enabled}) => {
-    const handleClickRepeat = () => {
-        if (!action["canExecute"](gameState.resourceCount,gameState)) {
-            return;
-        }
-        // Now setting the new action via staging rather than directly
-        gameState.setStaging({"action":action,"operation":"Repeat"});
+const ConditionalToggleButton = ({action, gameState}) => {
+    const handleRepeatToggle = () => {
+        gameState.setStaging({"operation":"RepeatToggle","action":action});
     }
-
-    if (action["name"] in gameState.actionProgress || action.auto) {
+    if (!(action.auto)) {
+        return (
+            <StyledToggleButton onClick={handleRepeatToggle} repOn={gameState.repeat[action["name"]]}>
+                Rep.
+            </StyledToggleButton>
+        );
+    }
+    else {
         return (
             <>
             </>
-        );
+        )
     }
-    return (
-        <StyledRepeatButton
-            count={gameState.actionCount[action["name"]]}
-            enabled={enabled}
-            onClick={handleClickRepeat}
-        >
-            Repeat
-        </StyledRepeatButton>
-    );
 }
 
 const ConditionalButtonBox = ({action, gameState}) => {
     // Just the name here for automatic actions
-    if (action.auto) {
+    /*if (action.auto) {
         return (
             <>
                 {action.name}
             </>
         );
-    }
+    }*/
 
     const enabled = action["canExecute"](gameState.resourceCount,gameState) && !(action["name"] in gameState.actionProgress);
+    const handleMouseOver = () => { // For the Info box
+        gameState.hovers["action_"+action.name] = 1;
+    }
+    const handleMouseLeave = () => { // For the Info box
+        delete gameState.hovers["action_"+action.name];
+    }
 
+    // Repeat button taken out: <ConditionalRepeatButton action={action} gameState={gameState} enabled={enabled} />
     return (
         <>
             <ConditionalActionButton action={action} gameState={gameState} enabled={enabled} />
-            <ConditionalRepeatButton action={action} gameState={gameState} enabled={enabled} />
+            <ConditionalToggleButton action={action} gameState={gameState} />
+            <StyledInfoButton onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
+                ?
+            </StyledInfoButton>
         </>
     )
 }
 
-const ConditionalButtonBox2 = ({action, gameState}) => {
+/*const ConditionalButtonBox2 = ({action, gameState}) => {
     // Nothing here for actions not in progress or automatic actions
     if (!(action.name in gameState.actionProgress) || action.auto) {
         return (
@@ -111,30 +120,35 @@ const ConditionalButtonBox2 = ({action, gameState}) => {
             <StyledCancelButton onClick={handleCancelClick}>
                 Cancel
             </StyledCancelButton>
-            <StyledToggleButton onClick={handleRepeatToggle}>
-                Repeat: {gameState.actionProgress[action["name"]]["repeat"]?"ON":"OFF"}
-            </StyledToggleButton>
         </>
     );
-}
+}*/
 
 const ConditionalProgressBar = ({action, gameState}) => {
     if (!(action["name"] in gameState.actionProgress)) {
         return (
             <>
+                <p style={{position:'absolute'}}>&nbsp;{action.name}</p>
             </>
         );
     }
     const prog_value = 1-gameState.actionProgress[action["name"]]["timeLeft"]
-    return <StyledActionProgress value={prog_value} max={1}/>
+    return (
+        <>
+            <p style={{position:'absolute'}}>&nbsp;{action.name}</p>
+            <StyledActionProgress value={prog_value} max={1} />
+        </>
+    );
 }
 
 // Actions, assuming visibility. This component handles both manual and automatic actions.
 const Action = ({action, gameState}) => {
-    const handleMouseOver = ()=>gameState.setHover(action);
-
+    // The second set of buttons has been removed. The JSX was
+    //<StyledActionButtonBox2>
+    //    <ConditionalButtonBox2 action={action} gameState={gameState} />
+    //</StyledActionButtonBox2>
     return (
-        <StyledActionBox onMouseOver={handleMouseOver}>
+        <StyledActionBox>
             <StyledActionButtonBox>
                 <ConditionalButtonBox action={action} gameState={gameState} />
             </StyledActionButtonBox>
@@ -142,10 +156,6 @@ const Action = ({action, gameState}) => {
             <StyledActionProgressBox>
                 <ConditionalProgressBar action={action} gameState={gameState} />
             </StyledActionProgressBox>
-
-            <StyledActionButtonBox2>
-                <ConditionalButtonBox2 action={action} gameState={gameState} />
-            </StyledActionButtonBox2>
 
             <StyledLineClear/>
         </StyledActionBox>
