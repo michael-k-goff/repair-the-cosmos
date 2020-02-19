@@ -80,7 +80,7 @@ const ConditionalButtonBox = ({action, gameState}) => {
 
     const enabled = action["canExecute"](gameState.resourceCount,gameState) && !(action["name"] in gameState.actionProgress);
     const handleMouseOver = () => { // For the Info box
-        gameState.hovers["action_"+action.name] = 1;
+        gameState.hovers["action_"+action.name] = new Date().getTime();
     }
     const handleMouseLeave = () => { // For the Info box
         delete gameState.hovers["action_"+action.name];

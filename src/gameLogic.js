@@ -127,6 +127,20 @@ const setGameState = (gameState) => {
     gameState.setStory(gameState.story);
 }
 
+// Get rid of all but the newest hover. Assuming either there is a unique newest, or if there are
+// more than one for whatever reason, it doesn't matter which we keep.
+const cleanHovers = (gameState) => {
+    let newest = 0;
+    for (var key in gameState.hovers) {
+        if (gameState.hovers[key] <= newest) {
+            delete gameState.hovers[key];
+        }
+        else {
+            newest = gameState.hovers[key];
+        }
+    }
+}
+
 export const updateActionProgress = (gameState, ms) => {
     const num_actions = cacheNumAction(gameState);
     initiateAuto(gameState);
@@ -146,6 +160,7 @@ export const updateActionProgress = (gameState, ms) => {
             delete gameState.actionProgress[key];
         }
     }
+    cleanHovers(gameState);
     setGameState(gameState);
 }
 
@@ -226,8 +241,6 @@ export const init_story = [
     "",
     ""
 ]
-
-export const init_hover = "Watch this space for more info.";
 
 export const useGameState = () => {
     // Currently displayed pane

@@ -23,7 +23,7 @@ const ConditionalMenuButton = ({r, gameState}) => {
 
     // Button actions
     const handleOnClick = ()=>gameState.setPane(r.name)
-    const handleMouseOver = ()=>gameState.hovers["pane_"+r.name] = 1;
+    const handleMouseOver = ()=>gameState.hovers["pane_"+r.name] = new Date().getTime();
     const handleMouseLeave = ()=>delete gameState.hovers["pane_"+r.name];
 
     const isCurrentPane = r.name===gameState.pane;
@@ -51,11 +51,11 @@ const ConditionalMenuButton = ({r, gameState}) => {
 const MenuPane = ({gameState}) => {
     let cancelAllClick = ()=>gameState["setStaging"]({"operation":"CancelALL"});
     // Hovers for the special panes
-    let cancelAllHover = ()=>gameState.hovers["pane_Cancel Actions"] = 1;
+    let cancelAllHover = ()=>gameState.hovers["pane_Cancel Actions"] = new Date().getTime();
     let cancelAllLeave = ()=>delete gameState.hovers["pane_Cancel Actions"];
-    let cancelRepeatHover = ()=>gameState.hovers["pane_Cancel Repeats"] = 1;
+    let cancelRepeatHover = ()=>gameState.hovers["pane_Cancel Repeats"] = new Date().getTime();
     let cancelRepeatLeave = ()=>delete gameState.hovers["pane_Cancel Repeats"];
-    let settingsHover = ()=>gameState.hovers["pane_Info & Settings"] = 1;
+    let settingsHover = ()=>gameState.hovers["pane_Info & Settings"] = new Date().getTime();
     let settingsLeave = ()=>delete gameState.hovers["pane_Info & Settings"];
     return (
         <StyledMenuPane>
