@@ -3,15 +3,16 @@
 import {addLog} from "../gameLogic.js";
 
 export const resources01 = [
-    ["People","Population","Your current population. The more the merrier."],
-    ["Scout","Population","Scouts help you find new land."],
-    ["Gatherer","Population","Gatherers are needed to get more food."],
-    ["Wood Worker","Population","Specialized in carving wood implements"],
-    ["Stone Worker","Population","Specialist in preparing stone tools"],
-    ["Hunter","Population","The hunter is more skilled than the gatherer and also takes on more risk."],
-    ["Brain Size","Population","During the Lower Paleolithic, homonid brains grew to their present size, which in Repair the Cosmos is 10."],
-    ["Illness","Population","Illness is bad. If untreated, it will kill your population. It comes from harvesting certain kinds of food.",{"character":"bad"}],
-    ["Infant Mortality","Population","As brain size grows, delivery becomes more challenging, and more children die in childbirth. This stat is the percentage change that a child dies in birth. It decreases, to a point, with attempted births."],
+    ["People","Population ","Your current population. The more the merrier."],
+    ["Scout","Specialists","Scouts help you find new land."],
+    ["Gatherer","Specialists","Gatherers are needed to get more food."],
+    ["Wood Worker","Specialists","Specialized in carving wood implements"],
+    ["Stone Worker","Specialists","Specialist in preparing stone tools"],
+    ["Hunter","Specialists","The hunter is more skilled than the gatherer and also takes on more risk."],
+    ["Brain Size","Health","During the Lower Paleolithic, homonid brains grew to their present size, which in Repair the Cosmos is 10."],
+    ["Immune System","Health","Your Immune System slows illness, but does not cure it. More immunity gives you more time to apply a cure. It grows whenever someone dies of illness."],
+    ["Illness","Health","Illness is bad. If untreated, it will kill your population. It comes from harvesting certain kinds of food.",{"character":"bad"}],
+    ["Infant Mortality","Health","As brain size grows, delivery becomes more challenging, and more children die in childbirth. This stat is the percentage change that a child dies in birth. It decreases, to a point, with attempted births.",{"character":"bad"}],
 
     ["Garden of Eden","Territory","You have been kicked out. Repair the Cosmos."],
     ["Savannah","Territory","A good place for hunting and scavenging."],
@@ -21,21 +22,21 @@ export const resources01 = [
     ["River","Territory","Great for fishing and trade."],
     ["Cave","Territory","If you're going to be a band of cavepeople, you need a cave."],
 
-    ["Food","Resources","Food is your most basic resource and needed to grow your civilization."],
-    ["Protein","Resources","Concentrated nutritional energy. It is essential for growing your strength and endurance."],
-    ["Wild Mushrooms","Resources","Wild mushrooms are good food."],
-    ["Knowledge of Mushrooms","Resources","Through some unfortunate trial and error, you are learning which mushrooms won't make you sick."],
-    ["Carrion","Resources","Not the most appetizing meal, but an important source of protein early in history."],
-    ["Wild Grains","Resources","Before domestication, cereals were harvested from the wild."],
-    ["Wild Fruit","Resources","A rare and delicious treat."],
-    ["Nuts","Resources","High protein food that doesn't fight back."],
-    ["Eggs","Resources","Before animal husbandry is invented, you gather eggs from the wild."],
-    ["Berries","Resources","Berries are delicious, but they will make you sick if you're not careful."],
-    ["Knowledge of Berries","Resources","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
-    ["Wood","Resources","Go ahead and waste it. This stuff grows on trees."],
-    ["Rocks","Resources","Plain old rocks."],
-    ["Stone Tools","Resources","The most basic stone tools."],
-    ["Herbs","Resources","Cure illness. Use them on the Population tab."],
+    ["Food","Nutrition","Food is your most basic resource and needed to grow your civilization."],
+    ["Protein","Nutrition","Concentrated nutritional energy. It is essential for growing your strength and endurance."],
+    ["Wild Mushrooms","Wild Food","Wild mushrooms are good food."],
+    ["Knowledge of Mushrooms","Food Knowledge","Through some unfortunate trial and error, you are learning which mushrooms won't make you sick."],
+    ["Carrion","Wild Food","Not the most appetizing meal, but an important source of protein early in history."],
+    ["Wild Grains","Wild Food","Before domestication, cereals were harvested from the wild."],
+    ["Wild Fruit","Wild Food","A rare and delicious treat."],
+    ["Nuts","Wild Food","High protein food that doesn't fight back."],
+    ["Eggs","Wild Food","Before animal husbandry is invented, you gather eggs from the wild."],
+    ["Berries","Wild Food","Berries are delicious, but they will make you sick if you're not careful."],
+    ["Knowledge of Berries","Food Knowledge","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
+    ["Wood","Raw Materials","Go ahead and waste it. This stuff grows on trees."],
+    ["Rocks","Raw Materials","Plain old rocks."],
+    ["Stone Tools","Raw Materials","The most basic stone tools."],
+    ["Herbs","Raw Materials","Cure illness. Use them on the Population tab."],
 
     ["Campsite","Buildings","A campsite to rest."],
     ["Wood Shelter","Buildings","A basic shelter for resting."],
@@ -51,7 +52,7 @@ export const resources01 = [
 export const actions01 = [
     {
         "name":"Reproduce",
-        "pane":"Population",
+        "pane":"Population ",
         "effect":(modified, gameState) => {
             let message1 = "";
             if (modified["People"] >= 10) {
@@ -64,8 +65,8 @@ export const actions01 = [
             let message2 = "You gained 1 _People_"+message1+"."
             if (!success && modified["Infant Mortality"] >= 31) {
                 modified["Infant Mortality"] -= 1;
-                addLog("_Infant Mortality_ has decreased by 1.");
-                message2 = "Childbirth was unsuccessful "+message2+".";
+                addLog("_Infant Mortality_ has decreased by 1.",gameState);
+                message2 = "Childbirth was unsuccessful. "+message2;
             }
             addLog(message2,gameState);
             if (modified["People"]===10 && !modified["Savannah"]) {
@@ -92,7 +93,7 @@ export const actions01 = [
     },
     {
         "name":"Train Scout",
-        "pane":"Population",
+        "pane":"Specialists",
         "effect":(modified, gameState) => {
             modified["Scout"] += 1;
             addLog("Trained 1 _Scout_.",gameState);
@@ -113,7 +114,7 @@ export const actions01 = [
     },
     {
         "name":"Train Gatherer",
-        "pane":"Population",
+        "pane":"Specialists",
         "effect":(modified,gameState) => {
             modified["Gatherer"] += 1;
             addLog("Trained 1 _Gatherer_.",gameState);
@@ -131,20 +132,21 @@ export const actions01 = [
     },
     {
         "name":"Train Woodworker",
-        "pane":"Population",
+        "pane":"Specialists",
         "effect":(modified, gameState) => {
             modified["Wood Worker"] += 1;
-            addLog("Trained 1 _Wood Worker_.",gameState);
+            modified["Wood"] -= 2;
+            addLog("Trained 1 _Wood Worker_ and consumed 2 _Wood_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Wood"],0.25)/(1+rC["Wood Worker"])},
-        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] > 2+rC["Wood Worker"] * 2},
+        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] >= 2},
         "visible":(rC) => rC["Wood"] >= 1,
         "info":(rC)=>{
             let message = ["Train _Wood Worker_ to fashion wooden tools. Faster with more _People_, _Wood_."];
             if (rC["People"] <= 10+rC["Wood Worker"] * 4) {
                 message = message.concat(["!You need more _People_."]);
             }
-            if (rC["Wood"] <= 2+rC["Wood Worker"] * 2) {
+            if (rC["Wood"] < 2) {
                 message = message.concat(["!You need more _Wood_."]);
             }
             if (rC["Brain Size"] < 3) {
@@ -155,20 +157,21 @@ export const actions01 = [
     },
     {
         "name":"Train Stoneworker",
-        "pane":"Population",
+        "pane":"Specialists",
         "effect":(modified, gameState) => {
             modified["Stone Worker"] += 1;
-            addLog("Trained 1 _Stone Worker_.",gameState);
+            modified["Rocks"] -= 2;
+            addLog("Trained 1 _Stone Worker_ and consumed 2 _Rocks_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Rocks"],0.25)/(1+rC["Stone Worker"])},
-        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] > 2+rC["Stone Worker"] * 2},
+        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] >= 2},
         "visible":(rC) => rC["Rocks"] >= 1,
         "info":(rC)=>{
             let message = ["Train _Stone Worker_ to create and maintain _Stone Tools_. Faster with more _People_, _Rocks_."];
             if (rC["People"] <= 10+rC["Stone Worker"] * 4) {
                 message = message.concat(["!You need more _People_."]);
             }
-            if (rC["Rocks"] <= 2+rC["Stone Worker"] * 2) {
+            if (rC["Rocks"] < 2) {
                 message = message.concat(["!You need more _Rocks_."]);
             }
             if (rC["Brain Size"] < 3) {
@@ -179,7 +182,7 @@ export const actions01 = [
     },
     {
         "name":"Train Hunter",
-        "pane":"Population",
+        "pane":"Specialists",
         "effect":(modified, gameState) => {
             modified["Hunter"] += 1;
             addLog("Trained 1 _Hunter_.",gameState);
@@ -200,7 +203,7 @@ export const actions01 = [
     },
     {
         "name":"Brain Expansion",
-        "pane":"Population",
+        "pane":"Health",
         "effect":(modified, gameState) => {
             modified["Brain Size"] += 1;
             modified["Protein"] -= modified["Brain Size"];
@@ -213,8 +216,11 @@ export const actions01 = [
         "canExecute":(rC)=>rC["Brain Size"] ? (rC["Brain Size"] < 10 && rC["Protein"]>=rC["Brain Size"]+1) : rC["Protein"]>=1,
         "visible":(rC,more) => more["actionCount"]["Brain Expansion"] || rC["Protein"],
         "info":(rC)=>{
-            let message = ["Evolve into hominids with larger brains. Grows faster with more _Protein_."];
-            if (rC["Protein"] < (rC["Brain Size"]?rC["Brain Size"]+1 : 1)) {
+            let message = ["Evolve into hominids with larger _Brain Size_. Grows faster with more _Protein_."];
+            if (rC["Brain Size"] >= 10) {
+                message = message.concat(["!Your _Brain Size_ is already at full capacity."]);
+            }
+            else if (rC["Protein"] < (rC["Brain Size"]?rC["Brain Size"]+1 : 1)) {
                 message = message.concat(["!You need more _Protein_."]);
             }
             return message;
@@ -222,24 +228,27 @@ export const actions01 = [
     },
     {
         "name":"Succumb to Illness",
-        "pane":"Population",
+        "pane":"Health",
         "effect":(modified, gameState)=> {
-            if (modified["People"] > 2) {
+            if (modified["People"] >= 3) {
                 modified["People"] -= 1;
             }
             modified["Illness"] -= 1;
-            addLog("1 _People_ died of illness. Total _Illness_ has decreased by 1.");
+            modified["Immune System"] += 1;
+            addLog("1 _People_ died of illness. Remaining _Illness_ has decreased by 1 and _Immune System_ has improved by 1.",gameState);
         },
-        "speed":(rC) => {return 0.020*rC["Illness"]},
+        "speed":(rC) => {
+            return 0.20*rC["Illness"]/(10+rC["Immune System"])
+        },
         "canExecute":(rC) => rC["People"]>2 && rC["Illness"]>=1,
         "auto":1,
         "info":(rC)=>{
-            return ["Kills 1 _People_. Goes faster with more _Illness_."];
+            return ["Kills 1 _People_. Goes faster with more _Illness_ and slower with a better _Immune System_."];
         }
     },
     {
         "name":"Use Herbs",
-        "pane":"Population",
+        "pane":"Health",
         "effect":(modified, gameState) => {
             modified["Illness"] -= 1;
             modified["Herbs"] -= 1;
@@ -249,7 +258,7 @@ export const actions01 = [
         "canExecute":(rC) => rC["Herbs"] && rC["Illness"]>=1,
         "visible":(rC,more) => more["actionCount"]["Gather Herbs"],
         "info":(rC)=>{
-            let message = ["Apply _Herbs_ to cure _Illness_."];
+            let message = ["Apply _Herbs_ to cure _Illness_. Faster with more _Herbs_."];
             if (!rC["Herbs"]) {
                 message = message.concat(["!You need to have an _Herbs_."]);
             }
@@ -358,7 +367,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Mushrooms",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Wild Mushrooms"] += 1;
             addLog("Found 1 _Wild Mushrooms_.",gameState);
@@ -376,7 +385,7 @@ export const actions01 = [
     },
     {
         "name":"Consume Mushrooms",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState)=>{
             const illness = 2/(Math.max(2,modified["Knowledge of Mushrooms"]));
             const knowledge = 1/(1+Math.pow(modified["Knowledge of Mushrooms"],0.7));
@@ -391,7 +400,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Gather Mushrooms"],
         "info":(rC)=>{
             let message = ["Eat a delicious mushroom."];
-            if (!rC["Wild Mushrooms"]) {
+            if (rC["Wild Mushrooms"] < 1) {
                 message = message.concat(["!You need a _Wild Mushrooms_."]);
             }
             return message;
@@ -399,7 +408,7 @@ export const actions01 = [
     },
     {
         "name":"Harvest Carrion",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Carrion"] += 1;
             addLog("Found 1 _Carrion_.",gameState);
@@ -417,7 +426,7 @@ export const actions01 = [
     },
     {
         "name":"Consume Carrion",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState) => {
             modified["Carrion"] -= 1;
             modified["Illness"] += 1;
@@ -430,7 +439,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Harvest Carrion"],
         "info":(rC)=>{
             let message = ["You need the protein ... but damn."];
-            if (!rC["Carrion"]) {
+            if (rC["Carrion"] < 1) {
                 message = message.concat(["!You need _Carrion_."]);
             }
             return message;
@@ -438,7 +447,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Grains",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Wild Grains"] += 1;
             addLog("Found 1 _Wild Grains_",gameState);
@@ -456,7 +465,7 @@ export const actions01 = [
     },
     {
         "name":"Consume Grains",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState) => {
             modified["Wild Grains"] -= 1;
             modified["Food"] += 1;
@@ -467,7 +476,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Gather Grains"],
         "info":(rC)=>{
             let message = ["Early grains were not much of a meal, but it will do."];
-            if (!rC["Wild Grains"]) {
+            if (rC["Wild Grains"] < 1) {
                 message = message.concat(["!You need _Wild Grains_."]);
             }
             return message;
@@ -475,10 +484,10 @@ export const actions01 = [
     },
     {
         "name":"Gather Fruit",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Wild Fruit"] += 1;
-            addLog("Gather 1 _Wild Fruit_.", gameState);
+            addLog("Gathered 1 _Wild Fruit_.", gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Wild Fruit"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
@@ -493,7 +502,7 @@ export const actions01 = [
     },
     {
         "name":"Eat Fruit",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState) => {
             modified["Wild Fruit"] -= 1;
             modified["Food"] += 1;
@@ -504,7 +513,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Gather Fruit"],
         "info":(rC)=>{
             let message = ["The tastiest meal you have available now."];
-            if (!rC["Wild Fruit"]) {
+            if (rC["Wild Fruit"] < 1) {
                 message = message.concat(["!You need _Wild Fruit_."]);
             }
             return message;
@@ -512,7 +521,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Nuts",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Nuts"] += 1;
             addLog("Gathered 1 _Nuts_.", gameState);
@@ -532,7 +541,7 @@ export const actions01 = [
     },
     {
         "name":"Eat Nuts",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState) => {
             modified["Nuts"] -= 1;
             modified["Food"] += 1;
@@ -544,7 +553,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Gather Nuts"],
         "info":(rC)=>{
             let message = ["Good for _Food_ and _Protein_."];
-            if (!rC["Carrion"]) {
+            if (rC["Nuts"] < 1) {
                 message = message.concat(["!You need _Nuts_."]);
             }
             return message;
@@ -552,7 +561,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Eggs",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Eggs"] += 1;
             addLog("Gathered 1 _Eggs_.", gameState);
@@ -570,7 +579,7 @@ export const actions01 = [
     },
     {
         "name":"Eat Eggs",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState) => {
             modified["Eggs"] -= 1;
             modified["Illness"] += 1;
@@ -583,7 +592,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Gather Eggs"],
         "info":(rC)=>{
             let message = ["A good source of _Protein_, but raw, wild eggs still make you sick."];
-            if (!rC["Carrion"]) {
+            if (rC["Eggs"] < 1) {
                 message = message.concat(["!You need _Eggs_."]);
             }
             return message;
@@ -591,10 +600,10 @@ export const actions01 = [
     },
     {
         "name":"Pick Berries",
-        "pane":"Resources",
+        "pane":"Wild Food",
         "effect":(modified, gameState) => {
             modified["Berries"] += 1;
-            addLog("Picked 1 _Berries_.");
+            addLog("Picked 1 _Berries_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["River"], 0.25)/(1+rC["Berries"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["River"],
@@ -609,7 +618,7 @@ export const actions01 = [
     },
     {
         "name":"Eat Berries",
-        "pane":"Resources",
+        "pane":"Nutrition",
         "effect":(modified, gameState) => {
             const illness = 2/(Math.max(2,modified["Knowledge of Berries"]));
             const knowledge = 1/(1+Math.pow(modified["Knowledge of Berries"],0.7));
@@ -624,7 +633,7 @@ export const actions01 = [
         "visible":(rC,more) => more["actionCount"]["Pick Berries"],
         "info":(rC)=>{
             let message = ["A nice treat."];
-            if (!rC["Berries"]) {
+            if (rC["Berries"] < 1) {
                 message = message.concat(["!You need _Berries_."]);
             }
             return message;
@@ -632,7 +641,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Wood",
-        "pane":"Resources",
+        "pane":"Raw Materials",
         "effect":(modified, gameState) => {
             modified["Wood"] += 1;
             addLog("Gathered 1 _Wood_.",gameState);
@@ -650,7 +659,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Rocks",
-        "pane":"Resources",
+        "pane":"Raw Materials",
         "effect":(modified, gameState) => {
             modified["Rocks"] += 1;
             addLog("Gathered 1 _Rocks_.",gameState);
@@ -668,7 +677,7 @@ export const actions01 = [
     },
     {
         "name":"Make Stone Tools",
-        "pane":"Resources",
+        "pane":"Raw Materials",
         "effect":(modified, gameState) => {
             modified["Rocks"] -= 1;
             modified["Stone Tools"] += 1;
@@ -678,16 +687,16 @@ export const actions01 = [
         "canExecute":(rc) => rc["Stone Worker"] && rc["Rocks"],
         "visible":(rC) => rC["Stone Worker"],
         "info":(rC)=>{
-            let message = ["Manufacture some basic _Stone Tools_."];
-            if (!rC["Rocks"]) {
-                message = message.concat(["Y!ou need some _Rocks_."]);
+            let message = ["Manufacture some basic _Stone Tools_. Faster with more _Stone Worker_ and _Rocks_."];
+            if (rC["Rocks"] < 1) {
+                message = message.concat(["!You need some _Rocks_."]);
             }
             return message;
         }
     },
     {
         "name":"Gather Herbs",
-        "pane":"Resources",
+        "pane":"Raw Materials",
         "effect":(modified, gameState) => {
             modified["Herbs"] += 1;
             addLog("Gathered 1 _Herbs_.", gameState)
@@ -707,14 +716,31 @@ export const actions01 = [
         "name":"Gather",
         "pane":"Resources",
         "effect":(modified, gameState)=>{
-            addLog("(The Gather action is not yet enabled.)",gameState);
+            let gatherResults = [
+                ["Gather Herbs","Herbs"],["Gather Rocks","Rocks"],["Gather Wood","Wood"],
+                ["Pick Berries","Berries"],["Gather Eggs","Eggs"],["Gather Nuts","Nuts"],
+                ["Gather Fruit","Wild Fruit"],["Gather Grains","Wild Grains"],
+                ["Harvest Carrion","Carrion"],["Gather Mushrooms","Wild Mushrooms"]
+            ].filter((x)=>gameState.actions_dict[x[0]].canExecute(modified,gameState));
+            if (gatherResults.length === 0) {
+                addLog("Your gatherers failed to find anything useful.");
+                return;
+            }
+            let result = Math.floor(gatherResults.length*Math.random());
+            let speed = gameState.actions_dict[gatherResults[result][0]].speed(modified, gameState);
+            // Assuming that each of the actions considered produces 1 resource.
+            // Modify the following if that changes.
+            let bonus = speed*60*2;
+            modified[gatherResults[result][1]] += bonus;
+            console.log(gatherResults[result][1]);
+            addLog(`Your gatherers have found ${Math.round(100*bonus)/100} _${gatherResults[result][1]}_.`,gameState);
         },
-        "speed":(rC) => {return 0.1},
-        "canExecute":(rC)=> {
+        "speed":(rC) => {return 1/60},
+        "canExecute":(rC, gameState)=> {
             return rC["Gatherer"]
         },
         "info":(rC) => {
-            let message = ["Explore and gather a random resources. Faster than searching for a particular resource, but you might not get what you want. (Not yet implemented.)"];
+            let message = ["Gather a random resources. Results are twice as good, per second, compared to dedicated searching."];
             return message;
         }
     },
@@ -744,15 +770,18 @@ export const actions01 = [
         "pane":"Buildings",
         "effect":(modified, gameState) => {
             modified["Wood Shelter"] += 1;
-            addLog("Built 1 _Wood Shelter_.",gameState);
+            addLog("Built 1 _Wood Shelter_ and consumed 3 _Wood_..",gameState);
         },
         "speed":(rC) => {return 0.02*Math.pow(rC["Wood"]*rC["Campsite"]*rC["Wood Worker"], 1/6)/(1+rC["Wood Shelter"])},
-        "canExecute":(rc) => rc["Campsite"] && rc["Wood Worker"],
+        "canExecute":(rc) => rc["Campsite"] && rc["Wood Worker"] && rc["Wood"]>=3,
         "visible":(rC) => rC["Campsite"],
         "info":(rC)=>{
             let message = ["Build a basic shelter. This will help your population grow. Faster with more _Wood_, _Wood Worker_, _Campsite_."];
             if (!rC["Wood Worker"]) {
                 message = message.concat(["!You need a _Wood Worker_."]);
+            }
+            if (rC["Wood"] < 3) {
+                message = message.concat(["!You need more _Wood_."]);
             }
             return message;
         }
@@ -872,13 +901,29 @@ export const actions01 = [
         "name":"Fight",
         "pane":"Military",
         "effect":(modified,gameState)=> {
-            addLog("Got into a fight. Not implemented yet.");
+            // Will add more detail and differentiate the units later
+            let power = Math.sqrt(modified["Brute"])+Math.sqrt(modified["Stone Thrower"]);
+            let r = [Math.random(), Math.random()];
+            if (r[0] > r[1]) {
+                r = [r[1],r[0]];
+            }
+            let new_pop = 5*r[0]*power/(1+modified["People"]);
+            let new_food = 10*(r[1]-r[0])*power/(1+modified["Food"]);
+            let new_protein = 5*(1-r[1])*power/(1+modified["Protein"]);
+            let loss_brute = modified["Brute"]/(modified["Brute"]+modified["Stone Thrower"]);
+            let loss_st = modified["Stone Thrower"]/(modified["Brute"]+modified["Stone Thrower"]);
+            modified["People"] += new_pop;
+            modified["Food"] += new_food;
+            modified["Protein"] += new_protein;
+            modified["Brute"] -= loss_brute;
+            modified["Stone Thrower"] -= loss_st
+            addLog(`Got into a fight. Gained ${Math.round(100*new_pop)/100} _People_, ${Math.round(100*new_food)/100} _Food_, ${Math.round(100*new_protein)/100} _Protein_ and lost ${Math.round(100*loss_brute)/100} _Brute_ and ${Math.round(100*loss_st)/100} _Stone Thrower_.`, gameState);
         },
         "speed":(rC) => 0.1,
-        "canExecute":(rC)=>{return rC["Brute"] || rC["Stone Thrower"]},
+        "canExecute":(rC)=>{return rC["Brute"]>=1 || rC["Stone Thrower"]>=1},
         "visible":(rC)=>{return rC["Brute"] || rC["Stone Thrower"]},
         "info":(rC)=>{
-            let message = ["Start a fight. It doesn't do anything at the moment."];
+            let message = ["Start a fight. You will gain _People_, _Food_, _Protein_ and lose a unit. Better rewards with more _Brute_, _Stone Thrower_."];
             return message;
         }
     }

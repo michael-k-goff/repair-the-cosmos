@@ -12,7 +12,7 @@ const separate_resources = (text, gameState) => {
             {blocks.map((t,i)=>{
                 return i%2
                     ?
-                        <font color="blue">
+                        <font color="blue" key={i}>
                             <b>
                                 {t}
                             </b>

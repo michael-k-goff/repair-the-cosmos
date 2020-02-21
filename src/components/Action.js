@@ -36,7 +36,7 @@ const ConditionalActionButton = ({action, gameState, enabled}) => {
             >
                 {
                     enabled ? "Go!" :
-                        action.name in gameState.actionProgress ? "Cancel" : "Can't"
+                        action.name in gameState.actionProgress ? "Stop" : "Can't"
                 }
             </StyledActionButton>
         );

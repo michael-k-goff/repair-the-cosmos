@@ -54,6 +54,9 @@ const InfoBoxAction = ({action, gameState})=>{
 const InfoBoxResource = ({resource, gameState})=>{
     return (
         <>
+            <p>
+                {styledText("_"+resource_dict[resource].name+"_", gameState)}
+            </p>
             {resource_dict[resource].desc}
         </>
     );
@@ -64,21 +67,21 @@ const InfoBox = ({x,y,gameState}) => {
         const key_pieces = key.split('_');
         if (key_pieces[0]==="action") {
             return (
-                <StyledInfoBox style={{top:`${y+10}px`, left:`${x+10}px`}}>
+                <StyledInfoBox style={{top:`${y-30}px`, left:`${x+10}px`}}>
                     <InfoBoxAction action={key_pieces[1]} gameState={gameState} />
                 </StyledInfoBox>
             );
         }
         if (key_pieces[0]==="pane") {
             return (
-                <StyledInfoBox style={{top:`${y+10}px`, left:`${x+10}px`}}>
+                <StyledInfoBox style={{top:`${y-30}px`, left:`${x+10}px`}}>
                     <InfoBoxPane pane={key_pieces[1]} gameState={gameState} />
                 </StyledInfoBox>
             );
         }
         if (key_pieces[0]==="resource") {
             return (
-                <StyledInfoBox style={{top:`${y+10}px`, left:`${x+10}px`}}>
+                <StyledInfoBox style={{top:`${y-30}px`, left:`${x+10}px`}}>
                     <InfoBoxResource resource={key_pieces[1]} gameState={gameState} />
                 </StyledInfoBox>
             );

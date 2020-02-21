@@ -15,13 +15,13 @@ export const StyledResourceInfoButton = styled.button`
 
 export const StyledResourceName = styled.div`
     float: left;
-    width:22%;
+    width:68%;
     height: 100%;
     left:0;
 `
 
 export const StyledResourceCount = styled.div`
-    width: 20%;
+    width: 24%;
     height: 100%;
     float: left;
     margin-left: 0%;
@@ -29,7 +29,7 @@ export const StyledResourceCount = styled.div`
 `
 
 export const StyledResourceInfoBox = styled.div`
-    width: 4%;
+    width: 8%;
     height: 100%;
     float: left;
     margin-left: 0%;

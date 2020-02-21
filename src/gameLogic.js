@@ -1,7 +1,8 @@
 // Game logic goes here.
 
-import {resource_panes, resources} from './assets.js';
+import {resources, panes_by_pane, resource_dict, resource_pane_dict, actions_dict} from './assets.js';
 import {useState} from 'react';
+import {resource_panes} from './assetsPanes';
 
 import {actionEffectWrapper, actions, auto_actions} from './assets.js';
 
@@ -82,7 +83,19 @@ const stageNewAction = (gameState) => {
             gameState.repeat[gameState["staging"]["action"]["name"]] = 1;
         }
         if (gameState["staging"]["operation"] && gameState["staging"]["operation"]==="RepeatToggle") {
-            gameState.repeat[gameState.staging.action.name] = gameState.repeat[gameState.staging.action.name] ? 0:1;
+            // Check how many repeats
+            let num_repeats = 0;
+            for (var key in gameState.repeat) {
+                if (gameState.repeat[key]) {
+                    num_repeats += 1;
+                }
+            }
+            if (num_repeats >= 4 && !gameState.repeat[gameState.staging.action.name]) {
+                gameState.hovers["other_You cannot have more than 4 repeating actions. Please disable another repeating action first."] = new Date().getTime();
+            }
+            else {
+                gameState.repeat[gameState.staging.action.name] = gameState.repeat[gameState.staging.action.name] ? 0:1;
+            }
         }
     }
     if (gameState["staging"]["operation"] && gameState["staging"]["operation"]==="CancelRepeat") {
@@ -131,12 +144,17 @@ const setGameState = (gameState) => {
 // more than one for whatever reason, it doesn't matter which we keep.
 const cleanHovers = (gameState) => {
     let newest = 0;
+    let prev_key = "";
     for (var key in gameState.hovers) {
         if (gameState.hovers[key] <= newest) {
             delete gameState.hovers[key];
         }
         else {
             newest = gameState.hovers[key];
+            if (gameState.hovers[prev_key]) {
+                delete gameState.hovers[prev_key];
+            }
+            prev_key = key;
         }
     }
 }
@@ -177,13 +195,19 @@ export const gameSave = (gameState, window) => {
     window.localStorage.setItem("actionProgress",JSON.stringify(gameState.actionProgress));
     window.localStorage.setItem("story",JSON.stringify(gameState.story));
     window.localStorage.setItem("actionCount",JSON.stringify(gameState["actionCount"]));
-    window.localStorage.setItem("setRepeat",JSON.stringify(gameState["repeat"]));
+    window.localStorage.setItem("repeat",JSON.stringify(gameState["repeat"]));
 }
 
 export const loadGame = (gameState, window) => {
     let rC = window.localStorage.getItem("resourceCount");
     if (rC) {
-        gameState.setResourceCount(JSON.parse(rC));
+        let parsed = JSON.parse(rC);
+        for (var r_key in resource_dict) {
+            if (!parsed[r_key]) {
+                parsed[r_key] = 0;
+            }
+        }
+        gameState.setResourceCount(parsed);
     }
     let aP = window.localStorage.getItem("actionProgress");
     // This is a bit of a mess. Probably want a system where the actions are readily identified by keys.
@@ -245,6 +269,8 @@ export const init_story = [
 export const useGameState = () => {
     // Currently displayed pane
     const [pane, setPane] = useState(resource_panes[0].name);
+    let init_subpane = panes_by_pane[pane].length ? panes_by_pane[pane][0].name : pane;
+    const [subpane, setSubpane] = useState(init_subpane);
 
     // Counts of all resources
     const [resourceCount, setResourceCount] = useState(init_resource_count());
@@ -273,6 +299,7 @@ export const useGameState = () => {
 
     return {
             "pane":pane, "setPane":setPane,
+            "subpane":subpane, "setSubpane":setSubpane,
             "resourceCount":resourceCount, "setResourceCount":setResourceCount,
             "actionProgress":actionProgress, "setActionProgress":setActionProgress,
             "story":story, "setStory":setStory,
@@ -280,6 +307,8 @@ export const useGameState = () => {
             "staging":staging, "setStaging":setStaging,
             "numActions":numActions, "setNumActions":setNumActions,
             "repeat":repeat, "setRepeat":setRepeat,
-            "hovers":hovers, "setHovers":setHovers
+            "hovers":hovers, "setHovers":setHovers,
+            // A few assets to be bundled up in here for messiness, I mean convenience
+            "actions_dict":actions_dict,"resource_dict":resource_dict,"resource_pane_dict":resource_pane_dict
     }
 }

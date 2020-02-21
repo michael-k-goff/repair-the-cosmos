@@ -60,13 +60,13 @@ export const StyledActionBox = styled.div`
 `;
 
 export const StyledActionButtonBox = styled.div`
-    width: 18%;
+    width: 36%;
     height: 100%;
     float: left;
 `;
 
 export const StyledActionProgressBox = styled.div`
-    width: 32%;
+    width: 64%;
     height: 100%;
     float: left;
     margin-left: 0%;
