@@ -102,12 +102,12 @@ export const actions01 = [
             }
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Scout"])},
-        "canExecute":(rC) => {return rC["People"] > 9+rC["Scout"] * 2},
-        "visible":(rC) => rC["People"] >= 10,
+        "canExecute":(rC) => {return rC["People"] >= 10+rC["Scout"] * 2},
+        "visible":(rC) => rC["People"] >= 5,
         "info":(rC)=>{
             let message = ["Train _Scout_ to find more territory. Faster with more _People_."]
-            if (rC["People"] <= 9+rC["Scout"] * 2) {
-                message = message.concat(["!You need more _People_."]);
+            if (rC["People"] < 10+rC["Scout"] * 2) {
+                message = message.concat([`!You need ${10+rC["Scout"] * 2} _People_.`]);
             }
             return message;
         }
@@ -120,12 +120,12 @@ export const actions01 = [
             addLog("Trained 1 _Gatherer_.",gameState);
         },
         "speed":(rC) => {return Math.sqrt(rC["People"])/(10+5*rC["Gatherer"])},
-        "canExecute":(rC) => {return rC["People"] > 9+rC["Gatherer"] * 2},
-        "visible":(rC) => rC["People"] >= 10,
+        "canExecute":(rC) => {return rC["People"] >= 10+rC["Gatherer"] * 2},
+        "visible":(rC) => rC["People"] >= 5,
         "info":(rC)=>{
             let message = ["Train _Gatherer_ to find more food. Faster with more _People_."];
-            if (rC["People"] <= 9+rC["Gatherer"] * 2) {
-                message = message.concat(["!You need more _People_."]);
+            if (rC["People"] < 10+rC["Gatherer"] * 2) {
+                message = message.concat([`!You need ${10+rC["Gatherer"]*2} _People_.`]);
             }
             return message;
         }
@@ -139,12 +139,12 @@ export const actions01 = [
             addLog("Trained 1 _Wood Worker_ and consumed 2 _Wood_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Wood"],0.25)/(1+rC["Wood Worker"])},
-        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Wood Worker"] * 4 && rC["Wood"] >= 2},
+        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] >= 11+rC["Wood Worker"] * 4 && rC["Wood"] >= 2},
         "visible":(rC) => rC["Wood"] >= 1,
         "info":(rC)=>{
             let message = ["Train _Wood Worker_ to fashion wooden tools. Faster with more _People_, _Wood_."];
-            if (rC["People"] <= 10+rC["Wood Worker"] * 4) {
-                message = message.concat(["!You need more _People_."]);
+            if (rC["People"] < 11+rC["Wood Worker"] * 4) {
+                message = message.concat([`!You need ${11+rC["Wood Worker"] * 4} _People_.`]);
             }
             if (rC["Wood"] < 2) {
                 message = message.concat(["!You need more _Wood_."]);
@@ -164,12 +164,12 @@ export const actions01 = [
             addLog("Trained 1 _Stone Worker_ and consumed 2 _Rocks_.",gameState);
         },
         "speed":(rC) => {return 0.1*Math.pow(rC["People"]*rC["Rocks"],0.25)/(1+rC["Stone Worker"])},
-        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] > 10+rC["Stone Worker"] * 4 && rC["Rocks"] >= 2},
+        "canExecute":(rC) => {return rC["Brain Size"]>=3 && rC["People"] >= 11+rC["Stone Worker"] * 4 && rC["Rocks"] >= 2},
         "visible":(rC) => rC["Rocks"] >= 1,
         "info":(rC)=>{
             let message = ["Train _Stone Worker_ to create and maintain _Stone Tools_. Faster with more _People_, _Rocks_."];
-            if (rC["People"] <= 10+rC["Stone Worker"] * 4) {
-                message = message.concat(["!You need more _People_."]);
+            if (rC["People"] < 11+rC["Stone Worker"] * 4) {
+                message = message.concat([`!You need ${11+rC["Stone Worker"] * 4} _People_.`]);
             }
             if (rC["Rocks"] < 2) {
                 message = message.concat(["!You need more _Rocks_."]);
@@ -842,7 +842,7 @@ export const actions01 = [
         "info":(rC)=>{
             let message = ["Turn your band into an organized tribe. You need a lot of people. Faster with more _People_, _Valley_, _River_, _Fire Pit_, _Grain Storage_."];
             if (rC["People"] < 50) {
-                message = message.concat(["!You need more _People_."]);
+                message = message.concat(["!You need 50 _People_."]);
             }
             if (rC["Brain Size"] < 10) {
                 message = message.concat(["!You need a bigger _Brain Size_, dummy."]);
@@ -919,7 +919,7 @@ export const actions01 = [
             modified["Stone Thrower"] -= loss_st
             addLog(`Got into a fight. Gained ${Math.round(100*new_pop)/100} _People_, ${Math.round(100*new_food)/100} _Food_, ${Math.round(100*new_protein)/100} _Protein_ and lost ${Math.round(100*loss_brute)/100} _Brute_ and ${Math.round(100*loss_st)/100} _Stone Thrower_.`, gameState);
         },
-        "speed":(rC) => 0.1,
+        "speed":(rC) => 1/60,
         "canExecute":(rC)=>{return rC["Brute"]>=1 || rC["Stone Thrower"]>=1},
         "visible":(rC)=>{return rC["Brute"] || rC["Stone Thrower"]},
         "info":(rC)=>{

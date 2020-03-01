@@ -185,7 +185,11 @@ export const updateActionProgress = (gameState, ms) => {
 export const gameReset = (gameState) => {
     gameState.setActionProgress({});
     gameState.setResourceCount(init_resource_count());
-    gameState.setStory(init_story);
+    // Not sure why this for loop is necessary to reset the story, but evidently it is.
+    for (var i=0; i<init_story.length; i++) {
+        gameState.story[i] = init_story[i];
+    }
+    gameState.setStory(gameState.story);
     gameState.setActionCount({});
     gameState.setRepeat({});
 }
