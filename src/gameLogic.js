@@ -316,3 +316,9 @@ export const useGameState = () => {
             "actions_dict":actions_dict,"resource_dict":resource_dict,"resource_pane_dict":resource_pane_dict
     }
 }
+
+// Soft cap, for use in speed formulas.
+// Usage: import into the EraNN.js files. Multiply it by the rest of the speed formula.
+// The first parameter is where the softcap should be, the second is the value being softcaped.
+// Use a higher exponent to make the softcap sharper. In the limit (infinite exponent), it is a hard cap.
+export const softCap = (actual,cap,exponent=2) => 1/(1+Math.pow(actual/cap,exponent))

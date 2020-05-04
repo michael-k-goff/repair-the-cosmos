@@ -20,7 +20,7 @@ const top_panes = [
         "pane":"top"
     },
     {
-        "name":"Buildings",
+        "name":"Construction",
         "desc":"Build stuff.",
         "visible":(gameState)=>gameState.actionCount["Explore Savannah"],
         "pane":"top"
@@ -59,10 +59,34 @@ const top_panes = [
 
 const subpanes = [
     {
-        "name":"Population Subpane",
+        "name":"Population Subpane", // Rename if other subpages under Population are developed
         "desc":"Population Subpane",
         "visible":(gameState)=>1,
         "pane":"Population"
+    },
+    {
+        "name":"Civilization",
+        "desc":"The size and development of your civilization overall.",
+        "visible":(gameState)=>1,
+        "pane":"Society"
+    },
+    {
+        "name":"Religion",
+        "desc":"Religious beliefs",
+        "visible":(gameState)=>gameState.actionCount["Form a Tribe"],
+        "pane":"Society"
+    },
+    {
+        "name":"Art",
+        "desc":"All forms of art.",
+        "visible":(gameState)=>gameState.actionCount["Form a Tribe"],
+        "pane":"Society"
+    },
+    {
+        "name":"Construction Subpane",
+        "desc":"Construction Subpane",
+        "visible":(gameState)=>1,
+        "pane":"Construction"
     },
     {
         "name":"Food",
@@ -75,6 +99,24 @@ const subpanes = [
         "desc":"Gather raw materials.",
         "visible":(gameState)=>1,
         "pane":"Resources"
+    },
+    {
+        "name":"Manufactured Goods",
+        "desc":"Manufactured goods.",
+        "visible":(gameState)=>1,
+        "pane":"Resources"
+    },
+    {
+        "name":"Trade",
+        "desc":"Trade",
+        "visible":(gameState)=>gameState.actionCount["Establish Barter Route"],
+        "pane":"Resources"
+    },
+    {
+        "name":"Military Subpane",
+        "desc":"Military Subpane",
+        "visible": (gameState)=>1,
+        "pane":"Military"
     }
 ]
 
@@ -92,6 +134,12 @@ const subsubpanes = [
         "pane":"Population Subpane"
     },
     {
+        "name":"Animals",
+        "desc":"The domesticated animals that are members of your civilization.",
+        "visible":(gameState)=>gameState.actionCount["Hunt"],
+        "pane":"Population Subpane"
+    },
+    {
         "name":"Health",
         "desc":"Health and physical characterists",
         "visible":(gameState)=>1,
@@ -101,6 +149,12 @@ const subsubpanes = [
         "name":"Wild Food",
         "desc":"Gather food from nature.",
         "visible":(gameState)=>1,
+        "pane":"Food"
+    },
+    {
+        "name":"Processed Food",
+        "desc":"Food after you have done stuff to it.",
+        "visible":(gameState)=>gameState.actionCount["Build Cookstove"],
         "pane":"Food"
     },
     {
@@ -114,6 +168,24 @@ const subsubpanes = [
         "desc":"Things you've learned about food from bitter (no pun intended) experience.",
         "visible":(gameState)=>1,
         "pane":"Food"
+    },
+    {
+        "name":"Buildings",
+        "desc":"Physical structures",
+        "visible":(gameState)=>1,
+        "pane":"Construction Subpane"
+    },
+    {
+        "name":"Infrastructure",
+        "desc":"Physical structure for transportation, waste disposal, etc.",
+        "visible":(gameState)=>gameState.actionCount["Form a Tribe"],
+        "pane":"Construction Subpane"
+    },
+    {
+        "name":"Units",
+        "desc":"All your military units",
+        "visible":(gameState)=>gameState.actionCount["Explore Savannah"],
+        "pane":"Military Subpane"
     }
 ]
 
