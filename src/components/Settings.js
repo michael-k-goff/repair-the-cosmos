@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import {StyledGameInfo, StyledResetButton} from './styles/StyledSettings';
 import {StyledMenuGap} from './styles/StyledMenuPane'
-import {gameReset} from '../gameLogic.js';
+import {initGameState} from '../gameLogic.js';
 
 const Settings = ({pane, gameState}) => {
     // Settings state. Count up four clicks in a two second interval in order to reset.
@@ -22,7 +22,10 @@ const Settings = ({pane, gameState}) => {
         let newResetClicks = [resetClicks[1],resetClicks[2],resetClicks[3],d.getTime()];
         setResetClicks(newResetClicks);
         if (newResetClicks[3] < newResetClicks[0] + 2000) {
-            gameReset(gameState);
+            const reseted = initGameState();
+            for (let key in reseted) {
+                gameState[key] = reseted[key];
+            }
         }
     }
     const handleMouseOver = ()=>gameState.hovers["other_Reset everything. Click four times quickly to make sure you really mean it."] = 1;

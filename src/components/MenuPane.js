@@ -10,9 +10,11 @@ const ConditionalMenuButton = ({r, gameState}) => {
     let doDisplay = resource_pane_dict[r.name].visible(gameState);
     // Button actions
     const handleOnClick = ()=>{
-        gameState.setPane(r.name);
-        let subpane = panes_by_pane[r.name].length ? panes_by_pane[r.name][0].name : r.name
-        gameState.setSubpane(subpane);
+        //gameState.setPane(r.name);
+        gameState.pane = r.name;
+        let subpane = panes_by_pane[r.name].length ? panes_by_pane[r.name][0].name : r.name;
+        gameState.subpane = subpane;
+        //gameState.setSubpane(subpane);
     }
     const handleMouseOver = ()=>gameState.hovers["pane_"+r.name] = new Date().getTime();
     const handleMouseLeave = ()=>delete gameState.hovers["pane_"+r.name];
@@ -40,11 +42,11 @@ const ConditionalMenuButton = ({r, gameState}) => {
 }
 
 const MenuPane = ({gameState}) => {
-    let cancelAllClick = ()=>gameState["setStaging"]({"operation":"CancelALL"});
-    let cancelRepeatClick = ()=>gameState["setStaging"]({"operation":"CancelRepeat"});
+    let cancelAllClick = ()=>gameState.staging = {"operation":"CancelALL"};
+    let cancelRepeatClick = ()=>gameState.staging = {"operation":"CancelRepeat"};
     let settingsClick = ()=>{
-        gameState.setPane("Settings");
-        gameState.setSubpane("Settings");
+        gameState.pane = "Settings";
+        gameState.subpane = "Settings";
     }
     // Hovers for the special panes
     let cancelAllHover = ()=>gameState.hovers["pane_Cancel Actions"] = new Date().getTime();

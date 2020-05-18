@@ -1445,7 +1445,7 @@ export const actions02 = [
         "canExecute":(rC) => rC["Jungle"]>=1,
         "auto":1,
         "info":(rC)=>{
-            return ["Catch _Illness_ from the environment. Greater effect with more _Jungle_, less with more _Immune System_"];
+            return ["Catch _Illness_ from the environment. Greater effect with more _Jungle_, less with more _Immune System_, _Herbalist_."];
         }
     }
 ]

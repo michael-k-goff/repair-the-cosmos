@@ -53,7 +53,20 @@ const ActionDisplay = ({pane, gameState}) => {
     return (
         <>
             {actions_by_pane[pane].map((a) =>
-                <ConditionalAction action={a} key={"action_"+a["name"]} gameState={gameState} />
+                <ConditionalAction
+                    action={a}
+                    progress={(()=>{
+                            return a.name in gameState.actionProgress ? gameState.actionProgress[a.name].timeLeft : -1
+                        })(a)
+                    }
+                    visible={"visible" in a ?
+                        a["visible"](gameState.resourceCount,gameState) :
+                        a["canExecute"](gameState.resourceCount,gameState)}
+                    executable={a["canExecute"](gameState.resourceCount,gameState)}
+                    key={"action_"+a["name"]}
+                    repeat={gameState.repeat[a["name"]]}
+                    gameState={gameState}
+                />
             )}
         </>
     );
@@ -77,7 +90,8 @@ const RandADisplay = ({pane, gameState}) => {
 
 const SubpaneButton = ({subpane, gameState}) => {
     const isCurrentSubpane = subpane.name === gameState.subpane;
-    const handleClick = ()=>gameState.setSubpane(subpane.name);
+    //const handleClick = ()=>gameState.setSubpane(subpane.name);
+    const handleClick = ()=>gameState.subpane = subpane.name;
     const handleMouseOver = ()=>gameState.hovers["pane_"+subpane.name] = new Date().getTime();
     const handleMouseLeave = ()=>delete gameState.hovers["pane_"+subpane.name];
 
@@ -170,7 +184,7 @@ const Subsubpanes = ({gameState}) => {
     );
 }
 
-const ResourcePane = ({gameState}) => {
+const ResourcePane = ({pane, subpane, gameState}) => {
     return (
         <StyledResourcePane>
             <StyledResourceHeader>

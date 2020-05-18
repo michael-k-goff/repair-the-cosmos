@@ -10,7 +10,7 @@ import {
 } from './styles/StyledResource';
 import {StyledLineClear} from './styles/StyledAction.js';
 
-const Resource = ({resource, count, gameState}) => {
+const Resource = React.memo(({resource, count, gameState}) => {
     const handleMouseOver = ()=>gameState.hovers["resource_"+resource.name] = new Date().getTime();
     const handleMouseLeave = ()=>delete gameState.hovers["resource_"+resource.name];
 
@@ -38,6 +38,6 @@ const Resource = ({resource, count, gameState}) => {
 
         </StyledResourceBox>
     )
-}
+})
 
 export default Resource;

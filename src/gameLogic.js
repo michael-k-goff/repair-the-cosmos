@@ -1,7 +1,6 @@
 // Game logic goes here.
 
 import {resources, panes_by_pane, resource_dict, resource_pane_dict, actions_dict} from './assets.js';
-import {useState} from 'react';
 import {resource_panes} from './assetsPanes';
 
 import {actionEffectWrapper, actions, auto_actions} from './assets.js';
@@ -53,10 +52,11 @@ const cacheNumAction = (gameState) => {
     let num_actions = Object.keys(gameState.actionProgress).filter(key =>
         !(gameState.actionProgress[key]["action"]["auto"])
     ).length;
-    gameState.setNumActions(num_actions);
-    return num_actions
+    gameState.numActions = num_actions;
+    return num_actions;
 }
 
+// Initiate the auto-executing actions.
 const initiateAuto = (gameState) => {
     // Add all executable auto actions
     for (var i=0; i<auto_actions.length; i++) {
@@ -66,10 +66,11 @@ const initiateAuto = (gameState) => {
     }
 }
 
+// Handle button presses via staging
 const stageNewAction = (gameState) => {
-    // Handle button presses via staging
     if (gameState["staging"]["action"]) {
         if (gameState["staging"]["operation"]==="One") {
+            console.log(gameState["staging"]["action"]["name"]);
             gameState.actionProgress[gameState["staging"]["action"]["name"]] =  {
                 "timeLeft":1,
                 "action":gameState["staging"]["action"]
@@ -130,16 +131,6 @@ const checkActionDone = (gameState, key, prog) => {
     }
 }
 
-const setGameState = (gameState) => {
-    gameState.setResourceCount(gameState.resourceCount);
-    gameState.setActionProgress(gameState.actionProgress);
-    gameState["setActionCount"](gameState.actionCount);
-    gameState["setStaging"]({});
-    gameState.setRepeat(gameState.repeat);
-    gameState.setHovers(gameState.hovers);
-    gameState.setStory(gameState.story);
-}
-
 // Get rid of all but the newest hover. Assuming either there is a unique newest, or if there are
 // more than one for whatever reason, it doesn't matter which we keep.
 const cleanHovers = (gameState) => {
@@ -159,6 +150,7 @@ const cleanHovers = (gameState) => {
     }
 }
 
+// The main update loop. Called once per frame.
 export const updateActionProgress = (gameState, ms) => {
     const num_actions = cacheNumAction(gameState);
     initiateAuto(gameState);
@@ -179,19 +171,7 @@ export const updateActionProgress = (gameState, ms) => {
         }
     }
     cleanHovers(gameState);
-    setGameState(gameState);
-}
-
-export const gameReset = (gameState) => {
-    gameState.setActionProgress({});
-    gameState.setResourceCount(init_resource_count());
-    // Not sure why this for loop is necessary to reset the story, but evidently it is.
-    for (var i=0; i<init_story.length; i++) {
-        gameState.story[i] = init_story[i];
-    }
-    gameState.setStory(gameState.story);
-    gameState.setActionCount({});
-    gameState.setRepeat({});
+    gameState.staging = {};
 }
 
 export const gameSave = (gameState, window) => {
@@ -211,7 +191,7 @@ export const loadGame = (gameState, window) => {
                 parsed[r_key] = 0;
             }
         }
-        gameState.setResourceCount(parsed);
+        gameState.resourceCount = parsed;
     }
     let aP = window.localStorage.getItem("actionProgress");
     // This is a bit of a mess. Probably want a system where the actions are readily identified by keys.
@@ -224,21 +204,21 @@ export const loadGame = (gameState, window) => {
                 }
             }
         }
-        gameState.setActionProgress(aP);
+        gameState.actionProgress = aP;
     }
     let s = window.localStorage.getItem("story");
     if (s) {
-        gameState.setStory(JSON.parse(s));
+        gameState.story = JSON.parse(s);
     }
 
     let aC = window.localStorage.getItem("actionCount");
     if (aC) {
-        gameState["setActionCount"](JSON.parse(aC));
+        gameState.actionCount = JSON.parse(aC);
     }
 
     let repeat = window.localStorage.getItem("repeat");
     if (repeat) {
-        gameState["setRepeat"](JSON.parse(repeat));
+        gameState.repeat = JSON.parse(repeat);
     }
 }
 
@@ -270,50 +250,23 @@ export const init_story = [
     ""
 ]
 
-export const useGameState = () => {
-    // Currently displayed pane
-    const [pane, setPane] = useState(resource_panes[0].name);
-    let init_subpane = panes_by_pane[pane].length ? panes_by_pane[pane][0].name : pane;
-    const [subpane, setSubpane] = useState(init_subpane);
-
-    // Counts of all resources
-    const [resourceCount, setResourceCount] = useState(init_resource_count());
-
-    // Progress toward completing actions
-    const [actionProgress, setActionProgress] = useState({});
-
-    // Current story
-    const [story, setStory] = useState(init_story)
-
-    // Counts of how many times each action is performed
-    const [actionCount, setActionCount] = useState({});
-
-    // Keep track of whether actions are set to repeat
-    const [repeat, setRepeat] = useState({});
-
-    // Staging area for actions done by click.
-    const [staging, setStaging] = useState({});
-
-    // Number of non-automatic actions going on at once.
-    // Being stored as a separate variable for caching purposes
-    const [numActions, setNumActions] = useState(0);
-
-    // What is being hovered over for info popup
-    const [hovers, setHovers] = useState({});
-
+// Initial game state. Meant to supersede the hook system; we'll see if that works.
+export const initGameState = () => {
     return {
-            "pane":pane, "setPane":setPane,
-            "subpane":subpane, "setSubpane":setSubpane,
-            "resourceCount":resourceCount, "setResourceCount":setResourceCount,
-            "actionProgress":actionProgress, "setActionProgress":setActionProgress,
-            "story":story, "setStory":setStory,
-            "actionCount":actionCount, "setActionCount":setActionCount,
-            "staging":staging, "setStaging":setStaging,
-            "numActions":numActions, "setNumActions":setNumActions,
-            "repeat":repeat, "setRepeat":setRepeat,
-            "hovers":hovers, "setHovers":setHovers,
-            // A few assets to be bundled up in here for messiness, I mean convenience
-            "actions_dict":actions_dict,"resource_dict":resource_dict,"resource_pane_dict":resource_pane_dict
+        "pane":resource_panes[0].name,
+        "subpane": panes_by_pane[resource_panes[0].name].length ? panes_by_pane[resource_panes[0].name][0].name : resource_panes[0].name,
+        "resourceCount":init_resource_count(),
+        "actionProgress":{},
+        "story":init_story,
+        "actionCount":{},
+        "repeat":{},
+        "staging":{},
+        "numActions":0,
+        "hovers":{},
+        "actions_dict":actions_dict,
+        "resource_dict":resource_dict,
+        // A few assets to be bundled up in here for messiness, I mean convenience
+        "resource_pane_dict":resource_pane_dict
     }
 }
 

@@ -220,7 +220,7 @@ export const actions01 = [
             return 0.02*rC["Protein"]/(1+rC["Brain Size"]);
         },
         "canExecute":(rC)=>rC["Brain Size"] ? (rC["Brain Size"] < 10 && rC["Protein"]>=rC["Brain Size"]+1) : rC["Protein"]>=1,
-        "visible":(rC,more) => (more["actionCount"]["Brain Expansion"] || rC["Protein"]) && more["actionCount"]["Brain Expansion"]<10,
+        "visible":(rC,more) => (more["actionCount"]["Brain Expansion"] || rC["Protein"]) && (!more["actionCount"]["Brain Expansion"] || more["actionCount"]["Brain Expansion"]<10),
         "info":(rC)=>{
             let message = ["Evolve into hominids with larger _Brain Size_. Grows faster with more _Protein_."];
             if (rC["Brain Size"] >= 10) {
@@ -483,7 +483,6 @@ export const actions01 = [
             addLog(`Ate 1 _Wild Grains_ and gained ${Math.floor(100*new_food)/100} _Food_.`, gameState);
         },
         "speed":(rC)=>{
-            console.log( rC["Wild Grains"] );
             return (1+Math.sqrt(rC["Wild Grains"]))*0.1
         },
         "canExecute":(rC)=>rC["Wild Grains"]>=1,

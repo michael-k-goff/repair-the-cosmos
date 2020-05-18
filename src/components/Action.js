@@ -16,14 +16,16 @@ import {
 const ConditionalActionButton = ({action, gameState, enabled}) => {
     const handleClick = () => {
         if (action["name"] in gameState.actionProgress) {
-            gameState.setStaging({"action":action,"operation":"Cancel"});
+            gameState.staging = {"action":action,"operation":"Cancel"};
+            //gameState.setStaging({"action":action,"operation":"Cancel"});
             return;
         }
         if (!action["canExecute"](gameState.resourceCount,gameState)) {
             return;
         }
         // Now setting the new action via staging rather than directly
-        gameState.setStaging({"action":action,"operation":"One"});
+        gameState.staging = {"action":action,"operation":"One"};
+        //gameState.setStaging({"action":action,"operation":"One"});
     }
 
     if (!(action.auto)) {
@@ -51,7 +53,8 @@ const ConditionalActionButton = ({action, gameState, enabled}) => {
 
 const ConditionalToggleButton = ({action, gameState}) => {
     const handleRepeatToggle = () => {
-        gameState.setStaging({"operation":"RepeatToggle","action":action});
+        gameState.staging = {"operation":"RepeatToggle","action":action};
+        //gameState.setStaging({"operation":"RepeatToggle","action":action});
     }
     if (!(action.auto)) {
         return (
@@ -162,7 +165,7 @@ const Action = ({action, gameState}) => {
     )
 }
 
-const ConditionalAction = ({action, gameState}) => {
+const ConditionalAction = React.memo(({action, progress, visible, executable, repeat, gameState}) => {
     // Actions that are not visible
     if ("visible" in action ?
         !action["visible"](gameState.resourceCount,gameState) :
@@ -185,6 +188,6 @@ const ConditionalAction = ({action, gameState}) => {
     return (
         <Action action={action} gameState={gameState} />
     );
-}
+})
 
 export default ConditionalAction;

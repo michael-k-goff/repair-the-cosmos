@@ -5,11 +5,12 @@ import ResourcePane from './components/ResourcePane';
 import StoryPane from './components/StoryPane';
 import InfoBox from './components/InfoBox';
 import { useInterval } from './useInterval';
-import {updateActionProgress, gameSave, loadGame, useGameState} from './gameLogic.js';
+import {updateActionProgress, gameSave, loadGame, initGameState} from './gameLogic.js';
+
+let gameState = initGameState();
 
 function App() {
     // Set up state
-    const gameState = useGameState();
     const [saveCycle, setSaveCycle] = useState(0);
     const [justLoaded, setJustLoaded] = useState(1);
     const [lastFrameTime, setLastFrameTime] = useState(new Date().getTime());
@@ -45,7 +46,7 @@ function App() {
     return (
         <div className="App" onMouseMove={mouseMoveFunc}>
             <MenuPane gameState={gameState}/>
-            <ResourcePane gameState={gameState}/>
+            <ResourcePane pane={gameState.pane} subpane={gameState.subpane} gameState={gameState}/>
             <StoryPane story={gameState.story} gameState={gameState} />
             <InfoBox x={mouseX} y={mouseY} gameState={gameState}/>
         </div>
