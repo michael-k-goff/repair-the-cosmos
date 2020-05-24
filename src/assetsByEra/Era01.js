@@ -375,11 +375,13 @@ export const actions01 = [
     {
         "name":"Gather Mushrooms",
         "pane":"Wild Food",
+        "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Forest"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Wild Mushrooms"] += 1;
-            addLog("Found 1 _Wild Mushrooms_.",gameState);
+            const new_resource = gameState.actions_dict["Gather Mushrooms"]["power"](modified, gameState);
+            modified["Wild Mushrooms"] += new_resource;
+            addLog(`Found ${Math.floor(100*new_resource)/100} _Wild Mushrooms_.`,gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wild Mushrooms"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Wild Mushrooms"],10)},
         "canExecute":(rC) => rC["Gatherer"] && rC["Forest"],
         "visible":(rC) => rC["Forest"],
         "info":(rC)=>{
@@ -417,11 +419,13 @@ export const actions01 = [
     {
         "name":"Harvest Carrion",
         "pane":"Wild Food",
+        "power":(modified,gameState)=>Math.pow(modified["Gatherer"]*modified["Savannah"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Carrion"] += 1;
-            addLog("Found 1 _Carrion_.",gameState);
+            const new_resource = gameState.actions_dict["Harvest Carrion"].power(modified,gameState);
+            modified["Carrion"] += new_resource;
+            addLog(`Found ${Math.round(new_resource)/10} _Carrion_.`,gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Carrion"])},
+        "speed":(rC) => {return softCap(rC["Carrion"],10)},
         "canExecute":(rc, more) => rc["Gatherer"] && rc["Savannah"] && !more["actionCount"]["Hunt"],
         "visible":(rC, more) => rC["Savannah"] && !more["actionCount"]["Hunt"],
         "info":(rC)=>{
@@ -458,11 +462,13 @@ export const actions01 = [
     {
         "name":"Gather Grains",
         "pane":"Wild Food",
+        "power":(modified,gameState) => Math.pow(modified["Gatherer"]*modified["Savannah"], 1/4),
         "effect":(modified, gameState) => {
-            modified["Wild Grains"] += 1;
-            addLog("Found 1 _Wild Grains_",gameState);
+            const new_resource = gameState.actions_dict["Gather Grains"].power(modified, gameState);
+            modified["Wild Grains"] += new_resource;
+            addLog(`Found ${Math.round(100*new_resource)/100} _Wild Grains_`,gameState);
         },
-        "speed":(rC) => {return 0.2*Math.pow(rC["Gatherer"]*rC["Savannah"]*(1+rC["Grain Storage"]), 1/6)/(1+rC["Wild Grains"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Wild Grains"],10+5*rC["Grain Storage"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
         "visible":(rC) => rC["Savannah"],
         "info":(rC)=>{
@@ -498,11 +504,13 @@ export const actions01 = [
     {
         "name":"Gather Fruit",
         "pane":"Wild Food",
+        "power":(modified, gameState)=>Math.pow(modified["Gatherer"]*modified["Savannah"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Wild Fruit"] += 1;
-            addLog("Gathered 1 _Wild Fruit_.", gameState);
+            const new_resource = gameState.actions_dict["Gather Fruit"].power(modified, gameState);
+            modified["Wild Fruit"] += new_resource;
+            addLog(`Gathered ${Math.floor(new_resource*100)/100} _Wild Fruit_.`, gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Wild Fruit"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Wild Fruit"],10)},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
         "visible":(rC) => rC["Savannah"],
         "info":(rC)=>{
@@ -536,12 +544,14 @@ export const actions01 = [
     {
         "name":"Gather Nuts",
         "pane":"Wild Food",
+        "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Valley"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Nuts"] += 1;
-            addLog("Gathered 1 _Nuts_.", gameState);
+            const new_resource = gameState.actions_dict["Gather Nuts"].power(modified, gameState);
+            modified["Nuts"] += new_resource;
+            addLog(`Gathered ${Math.floor(new_resource*100)/100} _Nuts_.`, gameState);
         },
         "speed":(rC) => {
-            return 0.1*Math.pow(rC["Gatherer"]*rC["Valley"], 0.25)/(1+rC["Nuts"])
+            return 0.1*softCap(rC["Nuts"],10);
         },
         "canExecute":(rc) => rc["Gatherer"] && rc["Valley"],
         "visible":(rC) => rC["Valley"],
@@ -578,11 +588,13 @@ export const actions01 = [
     {
         "name":"Gather Eggs",
         "pane":"Wild Food",
+        "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Hills"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Eggs"] += 1;
-            addLog("Gathered 1 _Eggs_.", gameState);
+            const new_resource = gameState.actions_dict["Gather Eggs"].power(modified, gameState);
+            modified["Eggs"] += new_resource;
+            addLog(`Gathered ${Math.floor(new_resource*100)/100} _Eggs_.`, gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Hills"], 0.25)/(1+rC["Eggs"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Eggs"],10)/(1+rC["Eggs"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Hills"],
         "visible":(rC) => rC["Hills"],
         "info":(rC)=>{
@@ -619,11 +631,13 @@ export const actions01 = [
     {
         "name":"Pick Berries",
         "pane":"Wild Food",
+        "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["River"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Berries"] += 1;
-            addLog("Picked 1 _Berries_.",gameState);
+            const new_resource = gameState.actions_dict["Pick Berries"].power(modified,gameState);
+            modified["Berries"] += new_resource;
+            addLog(`Picked ${Math.floor(100*new_resource)/100} _Berries_.`,gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["River"], 0.25)/(1+rC["Berries"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Berries"],10)/(1+rC["Berries"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["River"],
         "visible":(rC) => rC["River"],
         "info":(rC)=>{
@@ -661,15 +675,17 @@ export const actions01 = [
     {
         "name":"Gather Wood",
         "pane":"Raw Materials",
+        "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Forest"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Wood"] += 1;
-            addLog("Gathered 1 _Wood_.",gameState);
+            const new_resource = gameState.actions_dict["Gather Wood"].power(modified, gameState);
+            modified["Wood"] += new_resource;
+            addLog(`Gathered ${Math.floor(100*new_resource)/100} _Wood_.`,gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Forest"], 0.25)/(1+rC["Wood"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Wood"],10+5*rC["Wood Worker"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Forest"],
         "visible":(rC) => rC["Forest"],
         "info":(rC)=>{
-            let message = ["It's called the Stone Age, but _Wood_ was more widely used. It should be called the Wood Age. Faster with more _Gatherer_, _Forest_."];
+            let message = ["It's called the Stone Age, but _Wood_ was more widely used. It should be called the Wood Age. Faster with more _Gatherer_, _Forest_, _Wood Worker_."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["!You need a _Gatherer_."]);
             }
@@ -679,15 +695,17 @@ export const actions01 = [
     {
         "name":"Gather Rocks",
         "pane":"Raw Materials",
+        "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Savannah"], 0.25),
         "effect":(modified, gameState) => {
-            modified["Rocks"] += 1;
-            addLog("Gathered 1 _Rocks_.",gameState);
+            const new_resource = gameState.actions_dict["Gather Rocks"].power(modified, gameState);
+            modified["Rocks"] += new_resource;
+            addLog(`Gathered ${Math.floor(100*new_resource)/100} _Rocks_.`,gameState);
         },
-        "speed":(rC) => {return 0.1*Math.pow(rC["Gatherer"]*rC["Savannah"], 0.25)/(1+rC["Rocks"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Rocks"],10+5*rC["Stone Worker"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["Savannah"],
         "visible":(rC) => rC["Savannah"],
         "info":(rC)=>{
-            let message = ["Gathering _Rocks_ is boring, but they might be useful. Faster with more _Gatherer_, _Savannah_."];
+            let message = ["Gathering _Rocks_ is boring, but they might be useful. Faster with more _Gatherer_, _Savannah_, _Stone Worker_."];
             if (!rC["Gatherer"]) {
                 message = message.concat(["!You need a _Gatherer_."]);
             }
@@ -697,12 +715,14 @@ export const actions01 = [
     {
         "name":"Make Stone Tools",
         "pane":"Manufactured Goods",
+        "power":(modified, gameState)=>Math.pow(modified["Stone Worker"]*modified["Rocks"], 0.25),
         "effect":(modified, gameState) => {
+            const new_resource = gameState.actions_dict["Make Stone Tools"].power(modified,gameState);
             modified["Rocks"] -= 1;
-            modified["Stone Tools"] += 1;
-            addLog("Made 1 _Stone Tools_ from 1 _Rocks_.", gameState);
+            modified["Stone Tools"] += new_resource;
+            addLog(`Made ${Math.floor(100*new_resource)/100} _Stone Tools_ from 1 _Rocks_.`, gameState);
         },
-        "speed":(rC) => {return 0.05*Math.pow(rC["Stone Worker"]*rC["Rocks"], 0.25)/(1+rC["Stone Tools"])},
+        "speed":(rC) => {return 0.05*softCap(rC["Stone Tools"],5+rC["Stone Worker"])},
         "canExecute":(rc) => rc["Stone Worker"] && rc["Rocks"],
         "visible":(rC) => rC["Stone Worker"],
         "info":(rC)=>{
@@ -716,12 +736,13 @@ export const actions01 = [
     {
         "name":"Gather Herbs",
         "pane":"Raw Materials",
+        "power":(modified,gameState) => Math.pow(modified["Gatherer"]*modified["River"], 0.25),
         "effect":(modified, gameState) => {
-            let num_herbs = 1+0.2*Math.pow(modified["Herbalist"],0.3);
+            let num_herbs = gameState.actions_dict["Gather Herbs"].power(modified,gameState);
             modified["Herbs"] += num_herbs;
-            addLog(`Gathered ${Math.floor(num_herbs*100)/100} _Herbs_.`, gameState)
+            addLog(`Gathered ${Math.floor(num_herbs*100)/100} _Herbs_.`, gameState);
         },
-        "speed":(rC) => {return 0.05*Math.pow(rC["Gatherer"]*rC["River"], 0.25)/(1+rC["Herbs"])},
+        "speed":(rC) => {return 0.05*softCap(rC["Herbs"],3+rC["Herbalist"])},
         "canExecute":(rc) => rc["Gatherer"] && rc["River"],
         "visible":(rC) => rC["River"],
         "info":(rC)=>{
@@ -748,9 +769,10 @@ export const actions01 = [
             }
             let result = Math.floor(gatherResults.length*Math.random());
             let speed = gameState.actions_dict[gatherResults[result][0]].speed(modified, gameState);
+            let power = gameState.actions_dict[gatherResults[result][0]].power ? gameState.actions_dict[gatherResults[result][0]].power(modified, gameState) : 1;
             // Assuming that each of the actions considered produces 1 resource.
             // Modify the following if that changes.
-            let bonus = speed*60*2;
+            let bonus = speed*power*60*2;
             modified[gatherResults[result][1]] += bonus;
             console.log(gatherResults[result][1]);
             addLog(`Your gatherers have found ${Math.round(100*bonus)/100} _${gatherResults[result][1]}_.`,gameState);
@@ -906,7 +928,7 @@ export const actions01 = [
         "visible":(rC) => rC["People"] >= 10,
         "info":(rC)=>{
             let message = ["Train _Stone Thrower_. Faster with more _People_, _Protein_."]
-            if (rC["People"] <= 9+rC["Stone Thrower"] * 3) {
+            if (rC["People"] <= 10) {
                 message = message.concat(["!You need more _People_."]);
             }
             if (rC["Protein"] <= 1) {

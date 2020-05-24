@@ -30,8 +30,8 @@ export const resources02 = [
     ["Cave Painting","Art","An early cave painting"],
     ["Rock Art","Art","Artwork carved into rock."],
 
-    ["Barter Route","Infrastructure","A most basic trade route. Allows collection of new resources."],
     ["Trails","Infrastructure","Trails facilitate hunting, resource gathering, and trade."],
+    ["Barter Route","Infrastructure","A most basic trade route. Allows collection of new resources."],
     ["Stone Shelter","Buildings","The stone shelter is more durable than the wood shelter and a better home."],
     ["Tipi","Buildings","Another form of housing and public gathering."],
     ["Cookstove","Buildings","Needed to cook food."],
@@ -99,12 +99,14 @@ export const actions02 = [
     {
         "name":"Hunt",
         "pane":"Wild Food",
+        "power":(modified, gameState) => Math.sqrt(modified["Hunter"]),
         "effect":(modified,gameState) => {
-            modified["Game Meat"] += 1;
+            const new_resource = gameState.actions_dict["Hunt"].power(modified, gameState);
+            modified["Game Meat"] += new_resource;
             modified["Carrion"] = 0;
-            addLog("Hunted 1 _Game Meat_.", gameState);
+            addLog(`Hunted ${Math.floor(100*new_resource)/100} _Game Meat_.`, gameState);
         },
-        "speed":(rC) => Math.sqrt(rC["Hunter"])/(10+rC["Game Meat"]),
+        "speed":(rC) => 0.1*softCap(rC["Game Meat"],10),
         "canExecute":(rC) => rC["Hunter"] >= 1 && rC["Tribe"] >= 1,
         "info":(rC)=>{
             return ["Hunt game animals to get _Game Meat_. Faster with more _Hunter_."];
@@ -185,11 +187,13 @@ export const actions02 = [
     {
         "name":"Fish",
         "pane":"Wild Food",
+        "power":(modified,gameState) => Math.sqrt(modified["Fisher"]),
         "effect":(modified,gameState)=>{
-            modified["Fish"] += 1;
-            addLog("Caught 1 _Fish_.",gameState);
+            const new_resource = gameState.actions_dict["Fish"].power(modified,gameState);
+            modified["Fish"] += new_resource;
+            addLog(`Caught ${Math.floor(100*new_resource)/100} _Fish_.`,gameState);
         },
-        "speed":(rC) => Math.sqrt(rC["Fisher"])/(10+rC["Fish"]),
+        "speed":(rC) => 0.1*softCap(rC["Fish"],10),
         "canExecute":(rC) => rC["Fisher"] >= 1,
         "info":(rC)=>{
             return ["Catch some _Fish_. Faster with more _Fisher_."];
@@ -209,12 +213,14 @@ export const actions02 = [
     {
         "name":"Cook Game Meat",
         "pane":"Processed Food",
+        "power":(modified,gameState)=>Math.pow(modified["Game Meat"]*modified["Cookstove"],0.25),
         "effect":(modified, gameState) => {
-            modified["Cooked Meat"] += 1;
+            const new_resource = gameState.actions_dict["Cook Game Meat"].power(modified, gameState);
+            modified["Cooked Meat"] += new_resource;
             modified["Game Meat"] -= 1;
-            addLog("Cooked 1 _Game Meat_ into 1 _Cooked Meat_.",gameState);
+            addLog(`Cooked 1 _Game Meat_ into ${Math.floor(100*new_resource)/100} _Cooked Meat_.`,gameState);
         },
-        "speed":(rC)=>1.5*Math.pow(rC["Game Meat"]*rC["Cookstove"],0.25)/(10+rC["Cooked Meat"]),
+        "speed":(rC)=>0.15*softCap(rC["Cooked Meat"],10),
         "canExecute":(rC,more) => rC["Game Meat"] >= 1 && rC["Cookstove"] >= 1,
         "visible":(rC,more) => rC["Cookstove"] >= 1,
         "info":(rC)=> {
@@ -228,12 +234,14 @@ export const actions02 = [
     {
         "name":"Cook Fish",
         "pane":"Processed Food",
+        "power":(modified,gameState) => Math.pow(modified["Fish"]*modified["Cookstove"],0.25),
         "effect":(modified, gameState) => {
-            modified["Cooked Meat"] += 1;
+            const new_resource = gameState.actions_dict["Cook Fish"].power(modified,gameState);
+            modified["Cooked Meat"] += new_resource;
             modified["Fish"] -= 1;
-            addLog("Cooked 1 _Fish_ into 1 _Cooked Meat_.",gameState);
+            addLog(`Cooked 1 _Fish_ into ${Math.floor(100*new_resource)/100} _Cooked Meat_.`,gameState);
         },
-        "speed":(rC)=>1.5*Math.pow(rC["Fish"]*rC["Cookstove"],0.25)/(10+rC["Cooked Meat"]),
+        "speed":(rC)=>0.15*softCap(rC["Cooked Meat"],10),
         "canExecute":(rC,more) => rC["Fish"] >= 1 && rC["Cookstove"] >= 1,
         "visible":(rC,more) => rC["Cookstove"] >= 1,
         "info":(rC)=> {
@@ -247,12 +255,14 @@ export const actions02 = [
     {
         "name":"Cook Megafauna Meat",
         "pane":"Processed Food",
+        "power":(modified,gameState) => Math.pow(modified["Megafauna Meat"]*modified["Cookstove"],0.25),
         "effect":(modified, gameState) => {
-            modified["Cooked Meat"] += 2;
+            const new_resource = 2*gameState.actions_dict["Cook Megafauna Meat"].power(modified,gameState)
+            modified["Cooked Meat"] += new_resource;
             modified["Megafauna Meat"] -= 1;
-            addLog("Cooked 1 _Megafauna Meat_ into 2 _Cooked Meat_.",gameState);
+            addLog(`Cooked 1 _Megafauna Meat_ into ${Math.floor(100*new_resource)/100} _Cooked Meat_.`,gameState);
         },
-        "speed":(rC)=>Math.pow(rC["Megafauna Meat"]*rC["Cookstove"],0.25)/(10+rC["Cooked Meat"]),
+        "speed":(rC)=>0.1*softCap(rC["Cooked Meat"],10),
         "canExecute":(rC,more) => rC["Megafauna Meat"] >= 1 && rC["Cookstove"] >= 1,
         "visible":(rC,more) => rC["Cookstove"] >= 1,
         "info":(rC)=> {
@@ -267,26 +277,34 @@ export const actions02 = [
         "name":"Set Trap",
         "pane":"Raw Materials",
         "effect":(modified, gameState) => {
-            modified["Furs"] += 1;
-            modified["Bones"] += 1
-            addLog("Trapped a critter for 1 _Furs_ and 1 _Bones_.", gameState);
+            let new_fur = Math.sqrt(modified["Trapper"]);
+            let new_bone = Math.sqrt(modified["Trapper"]);
+            if (modified["Fur"] && modified["Bones"]) {
+                const soft_cap_diff = softCap(modified["Fur"],10) / softCap(modified["Bones"],10);
+                modified["Furs"]>modified["Bones"] ? new_fur *= soft_cap_diff : new_bone /= soft_cap_diff;
+            }
+            modified["Furs"] += new_fur;
+            modified["Bones"] += new_bone;
+            addLog(`Trapped a critter for ${Math.floor(100*new_fur)/100} _Furs_ and ${Math.floor(100*new_bone)/100} _Bones_.`, gameState);
         },
-        "speed":(rC)=>0.2*Math.sqrt(rC["Trapper"])/(5+rC["Furs"]),
+        "speed":(rC)=>0.2*softCap( Math.min(rC["Furs"],rC["Bones"]),5 ),
         "canExecute":(rC,more) => rC["Trapper"] >= 1,
         "visible":(rC, more) => more["actionCount"]["Train Trapper"] >= 1,
         "info":(rC) => {
-            return ["Set a trap for 1 _Fur_ and 1 _Bones_."]
+            return ["Set a trap for some _Fur_ and _Bones_."]
         }
     },
     {
         "name":"Sew Clothing",
         "pane":"Manufactured Goods",
+        "power":(modified, gameState) => Math.sqrt(modified["Furs"]),
         "effect":(modified, gameState) => {
+            const new_resource = gameState.actions_dict["Sew Clothing"].power(modified, gameState);
             modified["Furs"] -= 1;
-            modified["Clothing"] += 1;
-            addLog("Turned 1 _Furs_ into 1 _Clothing_.", gameState);
+            modified["Clothing"] += new_resource;
+            addLog(`Turned 1 _Furs_ into ${Math.floor(100*new_resource)/100} _Clothing_.`, gameState);
         },
-        "speed":(rC)=>0.2*Math.sqrt(rC["Furs"])/(2+rC["Clothing"]),
+        "speed":(rC)=>0.2*softCap(rC["Clothing"],10),
         "canExecute":(rC,more)=>rC["Furs"] >= 1,
         "visible":(rC,more)=>more["actionCount"]["Set Trap"] >= 1,
         "info":(rC)=>{
@@ -342,16 +360,18 @@ export const actions02 = [
     {
         "name":"Produce Microlith",
         "pane":"Manufactured Goods",
+        "power":(modified, gameState) => Math.pow(modified["Rocks"]*modified["Stone Worker"],0.25),
         "effect":(modified, gameState) => {
-            modified["Microlith"] += 1;
+            const new_resource = gameState.actions_dict["Produce Microlith"].power(modified, gameState);
+            modified["Microlith"] += new_resource;
             modified["Rocks"] -= 1;
-            addLog("Transformed 1 _Rocks_ into 1 _Microlith_.",gameState);
+            addLog(`Transformed 1 _Rocks_ into ${Math.floor(100*new_resource)/100} _Microlith_.`,gameState);
         },
-        "speed":(rC) => {return 0.3*Math.pow(rC["Rocks"]*rC["Stone Worker"],0.25)/(5+rC["Microlith"])},
+        "speed":(rC) => {return 0.3*softCap(rC["Microlith"],10)},
         "canExecute":(rC) => rC["Rocks"]>=1 && rC["Language"] >= 1 && rC["Stone Worker"] >= 1,
         "visible":(rC,more)=>more["actionCount"]["Develop Language"]>=1,
         "info":(rC)=>{
-            let message = ["Create a _Microlith_. Faster with more _Rocks_, _Stone Worker_."];
+            let message = ["Create _Microlith_. Faster with more _Rocks_, _Stone Worker_."];
             if (rC["Stone Worker"] < 1) {
                 message = message.concat(["!You need a _Stone Worker_."]);
             }
@@ -705,11 +725,13 @@ export const actions02 = [
     {
         "name":"Trade Cowry Shells",
         "pane":"Raw Materials",
+        "power":(modified,gameState) => Math.sqrt(modified["Barter Route"]),
         "effect":(modified, gameState) => {
-            modified["Cowry Shells"] += 1;
-            addLog("Gained 1 _Cowry Shells_.", gameState);
+            const new_resource = gameState.actions_dict["Trade Cowry Shells"].power(modified,gameState);
+            modified["Cowry Shells"] += new_resource;
+            addLog(`Gained ${Math.floor(100*new_resource)/100} _Cowry Shells_.`, gameState);
         },
-        "speed":(rC)=>0.075*Math.sqrt(rC["Barter Route"])/(10+rC["Cowry Shells"]),
+        "speed":(rC)=>0.03*softCap(rC["Cowry Shells"],15),
         "canExecute":(rC) => rC["Barter Route"]>=1,
         "visible":(rC,more)=>more["actionCount"]["Establish Barter Route"]>=1,
         "info":(rC)=>{
@@ -734,9 +756,10 @@ export const actions02 = [
             }
             let result = Math.floor(gatherResults.length*Math.random());
             let speed = gameState.actions_dict[gatherResults[result][0]].speed(modified, gameState);
+            let power = gameState.actions_dict[gatherResults[result][0]].speed(modified, gameState);
             // Assuming that each of the actions considered produces 1 resource.
             // Modify the following if that changes.
-            let bonus = speed*60*2;
+            let bonus = speed*power*60*2;
             modified[gatherResults[result][1]] += bonus;
             console.log(gatherResults[result][1]);
             addLog(`Your traders have found ${Math.round(100*bonus)/100} _${gatherResults[result][1]}_.`,gameState);
@@ -753,18 +776,20 @@ export const actions02 = [
     {
         "name":"Produce Beads",
         "pane":"Manufactured Goods",
+        "power":(modified, gameState)=>Math.pow(modified["Barter Route"]*modified["Bones"],0.25),
         "effect":(modified, gameState) => {
-            modified["Beads"] += 1;
+            const new_resource = gameState.actions_dict["Produce Beads"].power(modified, gameState);
+            modified["Beads"] += new_resource;
             modified["Bones"] -= 1;
-            addLog("Produced 1 _Beads_ from 1 _Bones.", gameState);
+            addLog(`Produced ${Math.floor(100*new_resource)/100} _Beads_ from 1 _Bones.`, gameState);
         },
         "speed":(rC)=> {
-            return 0.2*Math.pow(rC["Barter Route"]*rC["Bones"],0.25)/(4+rC["Beads"])
+            return 0.2*softCap(rC["Beads"],10);
         },
         "canExecute":(rC) => rC["Barter Route"]>=1 && rC["Bones"] >= 1,
         "visible":(rC,more)=>more["actionCount"]["Establish Barter Route"]>=1,
         "info":(rC)=>{
-            let message = ["Trade for _Cowry Shells_. Faster with more _Barter Route_."];
+            let message = ["Produce _Beads_. Faster with more _Bones_, _Barter Route_."];
             if (rC["Barter Route"] < 1) {
                 message = message.concat(["!You need _Barter Route_."]);
             }
@@ -777,11 +802,13 @@ export const actions02 = [
     {
         "name":"Hunt Megafauna",
         "pane":"Wild Food",
+        "power":(modified,gameState)=>Math.pow(modified["Hunter"]*modified["Tracker"],0.25),
         "effect":(modified,gameState) => {
-            modified["Megafauna Meat"] += 1;
-            addLog("Hunted 1 _Megafauna Meat_", gameState);
+            const new_resource = gameState.actions_dict["Hunt Megafauna"].power(modified, gameState);
+            modified["Megafauna Meat"] += new_resource;
+            addLog(`Hunted ${Math.floor(100*new_resource)/100} _Megafauna Meat_`, gameState);
         },
-        "speed":(rC) => Math.pow(rC["Hunter"]*rC["Tracker"],0.25)/(rC["Megafauna Meat"]+5),
+        "speed":(rC) => 0.2*softCap(rC["Megafauna Meat"],10),
         "canExecute":(rC) => rC["Hunter"] >= 1 && rC["Tracker"] >= 1,
         "visible":(rC, more) => more["actionCount"]["Train Tracker"] >= 1,
         "info":(rC)=>{
@@ -839,17 +866,19 @@ export const actions02 = [
     {
         "name":"Produce Axe",
         "pane":"Manufactured Goods",
+        "power":(modified,gameState)=>Math.pow(modified["Rocks"]*modified["Microlith"]*modified["Stone Worker"],1/6),
         "effect":(modified, gameState) => {
-            modified["Axe"] += 1;
+            const new_resource = gameState.actions_dict["Produce Axe"].power(modified, gameState);
+            modified["Axe"] += new_resource;
             modified["Microlith"] -= 1;
             modified["Rocks"] -= 1;
-            addLog("Transformed 1 _Microlith_ and 1 _Rocks_ into 1 _Axe_.",gameState);
+            addLog(`Transformed ${Math.floor(100*new_resource)/100} _Microlith_ and 1 _Rocks_ into 1 _Axe_.`,gameState);
         },
-        "speed":(rC) => {return 0.6*Math.pow(rC["Rocks"]*rC["Microlith"]*rC["Stone Worker"],1/6)/(5+rC["Axe"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Axe"],10)},
         "canExecute":(rC) => rC["Rocks"]>=1 && rC["Microlith"] >= 1 && rC["Stone Worker"] >= 1,
         "visible":(rC,more)=>more["actionCount"]["Produce Microlith"]>=1,
         "info":(rC)=>{
-            let message = ["Create an _Axe_. Faster with more _Rocks_, _Microlith, _Stone Worker_."];
+            let message = ["Create _Axe_. Faster with more _Rocks_, _Microlith, _Stone Worker_."];
             if (rC["Stone Worker"] < 1) {
                 message = message.concat(["!You need a _Stone Worker_."]);
             }
@@ -865,17 +894,19 @@ export const actions02 = [
     {
         "name":"Produce Spear",
         "pane":"Manufactured Goods",
+        "power":(modified, gameState)=>Math.pow(modified["Wood"]*modified["Microlith"]*modified["Stone Worker"],1/6),
         "effect":(modified, gameState) => {
-            modified["Spear"] += 1;
+            const new_resource = gameState.actions_dict["Produce Spear"].power(modified, gameState);
+            modified["Spear"] += new_resource;
             modified["Microlith"] -= 1;
             modified["Wood"] -= 1;
-            addLog("Transformed 1 _Microlith_ and 1 _Wood_ into 1 _Spear_.",gameState);
+            addLog(`Transformed ${Math.floor(100*new_resource)/100} _Microlith_ and 1 _Wood_ into 1 _Spear_.`,gameState);
         },
-        "speed":(rC) => {return 0.6*Math.pow(rC["Wood"]*rC["Microlith"]*rC["Stone Worker"],1/6)/(5+rC["Spear"])},
+        "speed":(rC) => {return 0.1*softCap(rC["Spear"],10)},
         "canExecute":(rC) => rC["Wood"]>=1 && rC["Microlith"] >= 1 && rC["Stone Worker"] >= 1,
         "visible":(rC,more)=>more["actionCount"]["Produce Microlith"]>=1,
         "info":(rC)=>{
-            let message = ["Create an _Axe_. Faster with more _Wood_, _Microlith, _Stone Worker_."];
+            let message = ["Create _Spear_. Faster with more _Wood_, _Microlith, _Stone Worker_."];
             if (rC["Stone Worker"] < 1) {
                 message = message.concat(["!You need a _Stone Worker_."]);
             }
@@ -971,12 +1002,14 @@ export const actions02 = [
     {
         "name":"Build Raft",
         "pane":"Manufactured Goods",
+        "power":(modified,gameState)=>Math.pow(modified["Wood"]*modified["Stone Tools"],1/4),
         "effect":(modified, gameState)=>{
-            modified["Raft"] += 1;
+            const new_resource = gameState.actions_dict["Build Raft"].power(modified, gameState);
+            modified["Raft"] += new_resource;
             modified["Wood"] -= 5;
-            addLog("Built 1 _Raft_ with 5 _Wood_.",gameState);
+            addLog(`Built ${Math.floor(100*new_resource)/100} _Raft_ with 5 _Wood_.`,gameState);
         },
-        "speed":(rC) => 0.05*Math.pow(rC["Wood"]*rC["Stone Tools"],1/4)/(1+rC["Raft"]),
+        "speed":(rC) => 0.05*softCap(rC["Raft"],3),
         "canExecute":(rC) => rC["Stone Tools"]>=1 && rC["Wood"]>=5,
         "visible":(rC, more) => more["actionCount"]["Produce Microlith"] >= 1,
         "info":(rC)=>{
@@ -1344,7 +1377,7 @@ export const actions02 = [
             let new_protein = 2*Math.min(1, 5/Math.sqrt(modified["Protein"]+1));
             modified["Protein"] += new_protein;
             modified["Illness"] += 0.5;
-            addLog(`Ate 1 _Cooked Meat_ and gained ${Math.floor(100*new_food)/100} _Food_, ${Math.floor(100*new_protein)/100} _Protein_, 0.5 _Illness.`, gameState);
+            addLog(`Ate 1 _Cooked Meat_ and gained ${Math.floor(100*new_food)/100} _Food_, ${Math.floor(100*new_protein)/100} _Protein_, 0.5 _Illness_.`, gameState);
         },
         "speed":(rC)=>Math.sqrt(rC["Cooked Meat"])*0.1,
         "canExecute":(rC)=>rC["Cooked Meat"] >= 1,
@@ -1402,12 +1435,12 @@ export const actions02 = [
         "pane":"Specialists",
         "effect":(modified, gameState) => {
             let results = [];
-            let num_rocks = Math.sqrt(modified["Rock Gatherer - Slave"])/(1+modified["Rocks"]);
+            let num_rocks = 0.1*Math.sqrt(modified["Rock Gatherer - Slave"])*gameState.actions_dict["Gather Rocks"].power(modified,gameState)*gameState.actions_dict["Gather Rocks"].speed(modified);
             if (num_rocks > 0) {
                 modified["Rocks"] += num_rocks;
                 results = results.concat([`gathered ${Math.floor(num_rocks*100)/100} _Rocks_`]);
             }
-            let num_wood = Math.sqrt(modified["Wood Gatherer - Slave"])/(1+modified["Wood"]);
+            let num_wood = 0.1*Math.sqrt(modified["Wood Gatherer - Slave"])*gameState.actions_dict["Gather Wood"].power(modified,gameState)*gameState.actions_dict["Gather Wood"].speed(modified);
             if (num_wood > 0) {
                 modified["Wood"] += num_wood;
                 results = results.concat([`gathered ${Math.floor(num_wood*100)/100} _Wood_`]);
@@ -1430,11 +1463,8 @@ export const actions02 = [
         "pane":"Health",
         "effect":(modified, gameState)=> {
             let new_illness = 10*modified["Jungle"]/(10+modified["Illness"]);
-            if (modified["Immune System"] > 40) {
-                new_illness *= (40/modified["Immune System"]);
-            }
-            if (modified["Herbalist"] > 10) {
-                new_illness *= (10/modified["Herbalist"]);
+            if (modified["Immune System"] > 20+20*modified["Jungle"]) {
+                new_illness *= (1-0.05*(modified["Immune System"]-20-20*modified["Jungle"]));
             }
             modified["Illness"] += new_illness;
             addLog(`The _Jungle_ has caused ${Math.round(100*new_illness)/100} _Illness_.`,gameState);
@@ -1442,7 +1472,7 @@ export const actions02 = [
         "speed":(rC) => {
             return 1/60;
         },
-        "canExecute":(rC) => rC["Jungle"]>=1,
+        "canExecute":(rC) => 40+20*rC["Jungle"]>rC["Immune System"] && rC["Jungle"]>=1,
         "auto":1,
         "info":(rC)=>{
             return ["Catch _Illness_ from the environment. Greater effect with more _Jungle_, less with more _Immune System_, _Herbalist_."];

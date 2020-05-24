@@ -70,7 +70,6 @@ const initiateAuto = (gameState) => {
 const stageNewAction = (gameState) => {
     if (gameState["staging"]["action"]) {
         if (gameState["staging"]["operation"]==="One") {
-            console.log(gameState["staging"]["action"]["name"]);
             gameState.actionProgress[gameState["staging"]["action"]["name"]] =  {
                 "timeLeft":1,
                 "action":gameState["staging"]["action"]
