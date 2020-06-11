@@ -2,6 +2,7 @@
 
 import {resources01, actions01} from './assetsByEra/Era01';
 import {resources02, actions02} from './assetsByEra/Era02';
+import {resources03, actions03} from './assetsByEra/Era03';
 import {resource_panes} from './assetsPanes';
 
 // Convert to a dictionary
@@ -10,7 +11,7 @@ for (var i=0; i<resource_panes.length; i++) {
     resource_pane_dict[resource_panes[i].name] = resource_panes[i];
 }
 
-export const resources = resources01.concat(resources02);
+export const resources = resources01.concat(resources02, resources03);
 // Add extra characteristic dictionaries to the end of each resource
 // They should have been dictionaries from the beginning. Oh well.
 for (i=0; i<resources.length;i++) {
@@ -33,7 +34,7 @@ for (i=0; i<resources.length; i++) {
     resource_dict[resources[i].name] = resources[i];
 }
 
-export const actions = actions01.concat(actions02);
+export const actions = actions01.concat(actions02, actions03);
 for (i=0; i<actions.length; i++) {
     actions[i].sort_key = i+((actions[i].auto)?1000000:0);
 }

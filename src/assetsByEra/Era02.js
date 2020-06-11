@@ -57,9 +57,9 @@ export const resources02 = [
     ["Axeman","Units","Fights with an axe."],
     ["Spearman","Units","Fights with a spear."],
 
-    ["Tundra","Territory","Icy territory."],
-    ["Jungle","Territory","Jungle, welcome to the jungle. Watch it bring you to your shun n-n-n-n-n-n-n-n knees, knees. Uh I, I wanna watch you bleed."],
-    ["Island","Territory","A small island near the shore."]
+    ["Tundra","Home Continent","Icy territory."],
+    ["Jungle","Home Continent","Jungle, welcome to the jungle. Watch it bring you to your shun n-n-n-n-n-n-n-n knees, knees. Uh I, I wanna watch you bleed."],
+    ["Island","Home Continent","A small island near the shore."]
 ]
 
 export const actions02 = [
@@ -70,8 +70,8 @@ export const actions02 = [
             modified["Story Teller"] += 1;
             addLog("Trained 1 _Story Teller_.",gameState);
         },
-        "speed":(rC) => {return 0.1 * Math.pow(rC["People"]*rC["Language"],0.25)/(10+5*rC["Story Teller"])},
-        "canExecute":(rC) => {return rC["People"] >= 50+rC["Story Teller"] * 5},
+        "speed":(rC) => {return 0.1 * softCap(50+5*rC["Story Teller"], rC["People"], 4)* Math.pow(rC["People"]*rC["Language"],0.25)/(10+5*rC["Story Teller"])},
+        "canExecute":(rC) => {return rC["People"] >= 50},
         "visible":(rC) => rC["Language"] >= 1,
         "info":(rC)=>{
             let message = ["Train _Scout_ to entertain and improve your culture. Faster with more _People_ and _Language_."]
@@ -317,7 +317,7 @@ export const actions02 = [
     },
     {
         "name":"Explore Tundra",
-        "pane":"Territory",
+        "pane":"Home Continent",
         "effect":(modified, gameState) => {
             modified["Tundra"] += 1;
             addLog("Found 1 _Tundra_.",gameState);
@@ -338,7 +338,7 @@ export const actions02 = [
     },
     {
         "name":"Explore Jungle",
-        "pane":"Territory",
+        "pane":"Home Continent",
         "effect":(modified, gameState) => {
             modified["Jungle"] += 1;
             addLog("Found 1 _Jungle_.",gameState);
@@ -929,7 +929,7 @@ export const actions02 = [
         },
         "speed":(rC)=>0.05*softCap(50+5*rC["Warrior"], rC["People"], 4)*Math.pow(rC["People"]*rC["Protein"],0.25)/(1+rC["Warrior"]),
         "canExecute":(rC) => {
-            return rC["Protein"]>=1 && (rC["People"] >= 50);
+            return rC["Protein"]>=2 && (rC["People"] >= 50);
         },
         "visible":(rC, more) => more["actionCount"]["Cook Game Meat"] >= 1,
         "info":(rC)=>{
@@ -1025,7 +1025,7 @@ export const actions02 = [
     },
     {
         "name":"Explore Island",
-        "pane":"Territory",
+        "pane":"Home Continent",
         "effect":(modified, gameState) => {
             modified["Island"] += 1;
             addLog("Found 1 _Island_.",gameState);
@@ -1246,7 +1246,6 @@ export const actions02 = [
             modified["Chiefdom"] += 1;
             addLog("Formed 1 _Chiefdom_.",gameState)
             if (modified["Chiefdom"] === 1) {
-                addLog("This is the end of the current demo. Feel free to keep playing.",gameState);
                 addLog("Your population has developed into a Chiefdom and is reaching the Neolithic era.",gameState);
             }
         },

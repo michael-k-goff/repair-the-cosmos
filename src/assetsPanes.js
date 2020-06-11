@@ -117,6 +117,12 @@ const subpanes = [
         "desc":"Military Subpane",
         "visible": (gameState)=>1,
         "pane":"Military"
+    },
+    {
+        "name":"Territory Subpane",
+        "desc":"Territory Subpane",
+        "visible": (gameState)=>1,
+        "pane":"Territory"
     }
 ]
 
@@ -146,6 +152,24 @@ const subsubpanes = [
         "pane":"Population Subpane"
     },
     {
+        "name":"Home Region",
+        "desc":"Territory near where your civilization was founded.",
+        "visible":(gameState)=>1,
+        "pane":"Territory Subpane"
+    },
+    {
+        "name":"Home Continent",
+        "desc":"Territory on and near your home continent",
+        "visible":(gameState)=>gameState.actionCount["Form a Tribe"],
+        "pane":"Territory Subpane"
+    },
+    {
+        "name":"Farmed Food",
+        "desc":"Food produced on farms.",
+        "visible":(gameState)=>gameState.actionCount["Form a Chiefdom"],
+        "pane":"Food"
+    },
+    {
         "name":"Wild Food",
         "desc":"Gather food from nature.",
         "visible":(gameState)=>1,
@@ -155,6 +179,12 @@ const subsubpanes = [
         "name":"Processed Food",
         "desc":"Food after you have done stuff to it.",
         "visible":(gameState)=>gameState.actionCount["Build Cookstove"],
+        "pane":"Food"
+    },
+    {
+        "name":"Dining",
+        "desc":"Places to eat.",
+        "visible":(gameState)=>gameState.actionCount["Form a Chiefdom"],
         "pane":"Food"
     },
     {

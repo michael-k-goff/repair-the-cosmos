@@ -14,13 +14,13 @@ export const resources01 = [
     ["Illness","Health","Illness is bad. If untreated, it will kill your population. It comes from harvesting certain kinds of food.",{"character":"bad"}],
     ["Infant Mortality","Health","As brain size grows, delivery becomes more challenging, and more children die in childbirth. This stat is the percentage change that a child dies in birth. It decreases, to a point, with attempted births.",{"character":"bad"}],
 
-    ["Garden of Eden","Territory","You have been kicked out. Repair the Cosmos."],
-    ["Savannah","Territory","A good place for hunting and scavenging."],
-    ["Forest","Territory","Harder to move around here."],
-    ["Hills","Territory","Food is scarcer but the hills are more defensible."],
-    ["Valley","Territory","Ideal place for founding a civilization."],
-    ["River","Territory","Great for fishing and trade."],
-    ["Cave","Territory","If you're going to be a band of cavepeople, you need a cave."],
+    ["Garden of Eden","Home Region","You have been kicked out. Repair the Cosmos."],
+    ["Savannah","Home Region","A good place for hunting and scavenging."],
+    ["Forest","Home Region","Harder to move around here."],
+    ["Hills","Home Region","Food is scarcer but the hills are more defensible."],
+    ["Valley","Home Region","Ideal place for founding a civilization."],
+    ["River","Home Region","Great for fishing and trade."],
+    ["Cave","Home Region","If you're going to be a band of cavepeople, you need a cave."],
 
     ["Food","Nutrition","Food is your most basic resource and needed to grow your civilization."],
     ["Protein","Nutrition","Concentrated nutritional energy. It is essential for growing your strength and endurance."],
@@ -277,7 +277,7 @@ export const actions01 = [
     },
     {
         "name":"Explore Savannah",
-        "pane":"Territory",
+        "pane":"Home Region",
         "effect":(modified, gameState) => {
             modified["Savannah"] += 1;
             if (modified["Savannah"]===1) {
@@ -291,7 +291,7 @@ export const actions01 = [
     },
     {
         "name":"Explore Forest",
-        "pane":"Territory",
+        "pane":"Home Region",
         "effect":(modified, gameState) => {
             modified["Forest"] += 1;
             addLog("Found 1 _Forest_.",gameState);
@@ -309,7 +309,7 @@ export const actions01 = [
     },
     {
         "name":"Explore Hills",
-        "pane":"Territory",
+        "pane":"Home Region",
         "effect":(modified, gameState) => {
             modified["Hills"] += 1;
             addLog("Found 1 _Hills_.",gameState);
@@ -327,7 +327,7 @@ export const actions01 = [
     },
     {
         "name":"Explore Valley",
-        "pane":"Territory",
+        "pane":"Home Region",
         "effect":(modified, gameState) => {
             modified["Valley"] += 1;
             addLog("Found 1 _Valley_.",gameState);
@@ -345,7 +345,7 @@ export const actions01 = [
     },
     {
         "name":"Explore River",
-        "pane":"Territory",
+        "pane":"Home Region",
         "effect":(modified, gameState) => {
             modified["River"] += 1;
             addLog("Found 1 _River_.",gameState);
@@ -363,7 +363,7 @@ export const actions01 = [
     },
     {
         "name":"Explore Cave",
-        "pane":"Territory",
+        "pane":"Home Region",
         "effect":(modified, gameState) => {
             modified["Cave"] += 1;
             addLog("Found 1 _Cave_.",gameState);
