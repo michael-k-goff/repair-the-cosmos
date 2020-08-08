@@ -41,11 +41,11 @@ export const resources02 = [
     ["Megafauna Meat","Wild Food","Meat from large animals. Be careful not to overhunt them."],
     ["Fish","Wild Food","Half the time you pull out old boots."],
     ["Cooked Meat","Processed Food","Cooking meat makes it more nutritious and less likely to make you sick."],
-    ["Bones","Raw Materials","Animal bones."],
-    ["Furs","Raw Materials","Animal furs. Good for making clothing."],
-    ["Rock Gatherer - Slave","Raw Materials","A slave that has been assigned to gather rocks."],
-    ["Wood Gatherer - Slave","Raw Materials","A slave that has been assigned to gather wood."],
-    ["Cowry Shells","Raw Materials","Cowry shells were once used as a form of money."],
+    ["Bones","Organic Materials","Animal bones."],
+    ["Furs","Organic Materials","Animal furs. Good for making clothing."],
+    ["Rock Gatherer - Slave","Minerals","A slave that has been assigned to gather rocks."],
+    ["Wood Gatherer - Slave","Organic Materials","A slave that has been assigned to gather wood."],
+    ["Cowry Shells","Organic Materials","Cowry shells were once used as a form of money."],
     ["Clothing","Manufactured Goods","Clothing is essential for living in any but temperature climates."],
     ["Microlith","Manufactured Goods","Microliths are small stone tools typically used as spearpoints or arrowheads."],
     ["Axe","Manufactured Goods","Good for war or for cutting wood."],
@@ -59,7 +59,11 @@ export const resources02 = [
 
     ["Tundra","Home Continent","Icy territory."],
     ["Jungle","Home Continent","Jungle, welcome to the jungle. Watch it bring you to your shun n-n-n-n-n-n-n-n knees, knees. Uh I, I wanna watch you bleed."],
-    ["Island","Home Continent","A small island near the shore."]
+    ["Island","Home Continent","A small island near the shore."],
+    // Unincorporated stuff
+    ["Bark","Organic Materials","Bark is the outer layer of a tree. In paleolithic times, bark was used to make adhesives."],
+    ["Flint","Minerals","Flint tools date to the late Paleolithic. It has subsequently been used in early firearms to ignite gunpowder and as a construction material."],
+    ["Ceramic","Composites","Ceramics are a broad class of materials, with usage going back to 26000 years ago for sculpture."]
 ]
 
 export const actions02 = [
@@ -275,7 +279,7 @@ export const actions02 = [
     },
     {
         "name":"Set Trap",
-        "pane":"Raw Materials",
+        "pane":"Organic Materials",
         "effect":(modified, gameState) => {
             let new_fur = Math.sqrt(modified["Trapper"]);
             let new_bone = Math.sqrt(modified["Trapper"]);
@@ -724,7 +728,7 @@ export const actions02 = [
     },
     {
         "name":"Trade Cowry Shells",
-        "pane":"Raw Materials",
+        "pane":"Organic Materials",
         "power":(modified,gameState) => Math.sqrt(modified["Barter Route"]),
         "effect":(modified, gameState) => {
             const new_resource = gameState.actions_dict["Trade Cowry Shells"].power(modified,gameState);
@@ -1393,7 +1397,7 @@ export const actions02 = [
     },
     {
         "name":"Assign Rock Gatherer",
-        "pane":"Raw Materials",
+        "pane":"Minerals",
         "effect":(modified, gameState) => {
             modified["Slave"] -= 1;
             modified["Rock Gatherer - Slave"] += 1;
@@ -1412,7 +1416,7 @@ export const actions02 = [
     },
     {
         "name":"Assign Wood Gatherer",
-        "pane":"Raw Materials",
+        "pane":"Organic Materials",
         "effect":(modified, gameState) => {
             modified["Slave"] -= 1;
             modified["Wood Gatherer - Slave"] += 1;
@@ -1475,6 +1479,52 @@ export const actions02 = [
         "auto":1,
         "info":(rC)=>{
             return ["Catch _Illness_ from the environment. Greater effect with more _Jungle_, less with more _Immune System_, _Herbalist_."];
+        }
+    },
+    // Unincorporated material
+    {
+        "name":"Gather Bark",
+        "pane":"Minerals",
+        "effect":(modified, gameState) => {
+            modified["Bark"] += 1;
+            addLog("Gathered 1 _Bark_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Tribe"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Tribe"],
+        "info":(rC)=>{
+            let message = ["Gather some _Bark_."];
+            return message;
+        }
+    },
+    {
+        "name":"Gather Flint",
+        "pane":"Organic Materials",
+        "effect":(modified, gameState) => {
+            modified["Flint"] += 1;
+            addLog("Gathered 1 _Flint_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Tribe"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Tribe"],
+        "info":(rC)=>{
+            let message = ["Gather some _Flint_."];
+            return message;
+        }
+    },
+    {
+        "name":"Make Ceramic",
+        "pane":"Composites",
+        "effect":(modified, gameState) => {
+            modified["Ceramic"] += 1;
+            addLog("Made 1 _Ceramic_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Tribe"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Tribe"],
+        "info":(rC)=>{
+            let message = ["Make some _Ceramic_."];
+            return message;
         }
     }
 ]

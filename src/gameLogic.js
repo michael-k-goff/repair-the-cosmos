@@ -162,7 +162,8 @@ export const updateActionProgress = (gameState, ms) => {
             var prog = gameState.actionProgress[key];
             var speed_mod = prog["action"]["auto"]?1:directSpeedMod(num_actions);
             // Real version should start with 0.001 * ...
-            prog["timeLeft"] -= 0.001*speed_mod*ms*prog["action"]["speed"](gameState.resourceCount);
+            if (prog.action.auto) {speed_mod *= 0.001} // Comment this out for real version
+            prog["timeLeft"] -= speed_mod*ms*prog["action"]["speed"](gameState.resourceCount);
             checkActionDone(gameState, key, prog);
         }
         else {

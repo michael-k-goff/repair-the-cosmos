@@ -33,10 +33,10 @@ export const resources01 = [
     ["Eggs","Wild Food","Before animal husbandry is invented, you gather eggs from the wild."],
     ["Berries","Wild Food","Berries are delicious, but they will make you sick if you're not careful."],
     ["Knowledge of Berries","Food Knowledge","White and yellow, kill a fellow. Purple and blue, good for you. Red could be good, could be dead."],
-    ["Wood","Raw Materials","Go ahead and waste it. This stuff grows on trees."],
-    ["Rocks","Raw Materials","Plain old rocks."],
+    ["Wood","Organic Materials","Go ahead and waste it. This stuff grows on trees."],
+    ["Rocks","Minerals","Plain old rocks."],
     ["Stone Tools","Manufactured Goods","The most basic stone tools."],
-    ["Herbs","Raw Materials","Cure illness. Use them on the Population tab."],
+    ["Herbs","Food Commodities","Cure illness. Use them on the Population tab."],
 
     ["Campsite","Buildings","A campsite to rest."],
     ["Wood Shelter","Buildings","A basic shelter for resting."],
@@ -46,7 +46,9 @@ export const resources01 = [
     ["Tribe","Civilization","An organized tribe, based on mutual interpersonal familiarity."],
 
     ["Brute","Units","A basic brawler."],
-    ["Stone Thrower","Units","Does not live in a glass house."]
+    ["Stone Thrower","Units","Does not live in a glass house."],
+    // Unincorporated material
+    ["Obsidian","Minerals","Obsidian is a naturally occurring volcanic glass with usage in toolmaking going back to the Acheulean."]
 ]
 
 export const actions01 = [
@@ -674,7 +676,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Wood",
-        "pane":"Raw Materials",
+        "pane":"Organic Materials",
         "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Forest"], 0.25),
         "effect":(modified, gameState) => {
             const new_resource = gameState.actions_dict["Gather Wood"].power(modified, gameState);
@@ -694,7 +696,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Rocks",
-        "pane":"Raw Materials",
+        "pane":"Minerals",
         "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["Savannah"], 0.25),
         "effect":(modified, gameState) => {
             const new_resource = gameState.actions_dict["Gather Rocks"].power(modified, gameState);
@@ -735,7 +737,7 @@ export const actions01 = [
     },
     {
         "name":"Gather Herbs",
-        "pane":"Raw Materials",
+        "pane":"Food Commodities",
         "power":(modified,gameState) => Math.pow(modified["Gatherer"]*modified["River"], 0.25),
         "effect":(modified, gameState) => {
             let num_herbs = gameState.actions_dict["Gather Herbs"].power(modified,gameState);
@@ -967,6 +969,22 @@ export const actions01 = [
         "visible":(rC)=>{return rC["Brute"] || rC["Stone Thrower"]},
         "info":(rC)=>{
             let message = ["Start a fight. You will gain _People_, _Food_, _Protein_ and lose a unit. Better rewards with more _Brute_, _Stone Thrower_."];
+            return message;
+        }
+    },
+    // Unincorporated material
+    {
+        "name":"Gather Obsidian",
+        "pane":"Minerals",
+        "effect":(modified, gameState) => {
+            modified["Obsidian"] += 1;
+            addLog("Gathered 1 _Obsidian_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Campsite"]>=1,
+        "visible":(rC,more) => more.actionCount["Build Campsite"],
+        "info":(rC)=>{
+            let message = ["Gather some _Obsidian_."];
             return message;
         }
     }

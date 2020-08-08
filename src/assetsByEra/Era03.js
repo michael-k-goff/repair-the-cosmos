@@ -43,7 +43,7 @@ export const resources03 = [
     ["Megalith","Art","Megalith construction dates to the Mesolithic period with Gobleki Tepi around 9500 BC."],
     ["Earthwork","Art","Earthworks are ancient monuments build from or in the Earth, such as the Cahokia Mound or the Nazca Lines."],
 
-    ["Settlement","Civilization","A settled tribe in a fixed location and with permanent buildings."],
+    ["Settlement","Urbanization","A settled tribe in a fixed location and with permanent buildings."],
     ["City","Civilization","Key elements of cities are population density, specialization, and complex social structure."],
 
     ["Temple","Religion","An ancient place of worship, often the focal point of a settlement."],
@@ -61,8 +61,8 @@ export const resources03 = [
 
     ["Walls","Infrastructure","City walls for defense."],
 
-    ["Clay","Raw Materials","Usage of clay for pottery dates back to the early Neolithic or earlier."],
-    ["Copper","Raw Materials","The earliest known copper working is observed around 5000 BC, inaugurating the Chalcolithic era."],
+    ["Clay","Minerals","Usage of clay for pottery dates back to the early Neolithic or earlier."],
+    ["Copper","Metals","The earliest known copper working is observed around 5000 BC, inaugurating the Chalcolithic era."],
 
     ["Stilt House","Buildings","Stilt houses are built to protect against flooding and vermin."],
     ["Granary","Buildings","Ancient granaries are storehouses for grain, generally built with pottery."],
@@ -70,13 +70,20 @@ export const resources03 = [
     ["Shaman","Specialists","Beyond their religious function, shamans provide medical services."],
 
     ["Disease","Health","Denser urban populations and close proximinty to animals creates a disease risk."],
-    ["Disease Resistance","Health","When people die of disease, the population develops immunity."]
+    ["Disease Resistance","Health","When people die of disease, the population develops immunity."],
+    // Unincorporated stuff
+    ["Salt","Food Commodities","Salt trade goes back to Neolithic times. It is used for flavoring and food preservation."],
+    ["Sand","Minerals","Sand was first used for grinding and polishing stone. Now sand is a widely used commodity in glassmaking, silicon refining, and other industries."], // http://www.madehow.com/Volume-3/Sand.html
+    ["Cotton","Organic Materials","Cotton has been in use since Neolithic times for clothing."],
+    ["Hemp","Organic Materials","Hemp was an early plant to be cultivated. It is used primarily for rope and fabric. Growing of hemp is difficult due to association with cannabis."],
+    ["Bamboo","Organic Materials","Bamboo is a versatile material. Cultivation goes back to around 5000 BC in China."],
+    ["Stone","Minerals","In this context, Stone refers to material that is quarried."]
 ]
 
 export const actions03 = [
     {
         "name":"Build Settlement",
-        "pane":"Civilization",
+        "pane":"Urbanization",
         "effect":(modified, gameState) => {
             modified["Settlement"] += 1;
             addLog("Built 1 _Settlement_.",gameState);
@@ -852,9 +859,9 @@ export const actions03 = [
         "name":"Succumb to Disease",
         "pane":"Health",
         "effect":(modified, gameState)=> {
-            let num_deaths = 6 / (2+modified["Shaman"])
+            let num_deaths = 6 / (2+modified["Shaman"]);
             if (modified["People"] >= 250) {
-                modified["People"] -= 3;
+                modified["People"] -= num_deaths;
             }
             modified["Disease"] -= 1;
             modified["Disease Resistance"] += 1;
@@ -866,12 +873,13 @@ export const actions03 = [
         "canExecute":(rC) => rC["People"]>=250 && rC["Disease"]>=1,
         "auto":1,
         "info":(rC)=>{
-            return ["Kills 3 _People_. Goes faster with more _Disease_ and slower with a more _Disease Resistance_. Less deadly with more _Shaman_."];
+            let num_deaths = 6 / (2+rC["Shaman"]);
+            return [`Kills ${Math.floor(100*num_deaths)/100} _People_. Goes faster with more _Disease_ and slower with a more _Disease Resistance_. Less deadly with more _Shaman_.`];
         }
     },
     {
         "name":"Dig Clay",
-        "pane":"Raw Materials",
+        "pane":"Minerals",
         "power":(modified, gameState) => Math.pow(modified["Gatherer"]*modified["River"], 0.25),
         "effect":(modified, gameState) => {
             const new_resource = gameState.actions_dict["Dig Clay"].power(modified, gameState);
@@ -981,7 +989,7 @@ export const actions03 = [
         "visible":(rC,more) => more.actionCount["Build City Walls"],
         "info":(rC) => {
             let message = ["Build a _Stilt House_. Faster with more _Walls_."];
-            if (rC["Pottery"] < 1) {
+            if (rC["Walls"] < 3) {
                 message = message.concat([`!You need _Walls_.`]);
             }
             return message;
@@ -1052,7 +1060,7 @@ export const actions03 = [
     },
     {
         "name":"Mine Copper",
-        "pane":"Raw Materials",
+        "pane":"Metals",
         "power":(modified, gameState) => Math.max(1,0.2*Math.pow(modified["Hills"], 0.5)),
         "effect":(modified, gameState) => {
             const new_resource = gameState.actions_dict["Mine Copper"].power(modified, gameState);
@@ -1081,11 +1089,11 @@ export const actions03 = [
             addLog("Built 1 _City_.",gameState)
             if (modified["City"] === 1) {
                 addLog("This is the end of the current demo. Feel free to keep playing.",gameState);
-                addLog("You have built a City and is reaching the Bronze Age.",gameState);
+                addLog("You have built a City and are reaching the Bronze Age.",gameState);
             }
         },
         "speed":(rC) => {return 0.001*Math.pow(rC["People"]*rC["Settlement"]*rC["Copper"]*rC["Temple"]*(rC["Mountain"]+rC["Pasture"]+rC["Desert"]), 1/10)/(1+rC["City"])},
-        "canExecute":(rC) => rC["Copper"] && rC["Temple"] && rC["Mountain"] && rC["Pasture"] && rC["Desert"] && rC["People"] >= 2000,
+        "canExecute":(rC) => rC["Copper"] && rC["Temple"] && rC["Mountain"] && rC["Pasture"] && rC["Desert"] && rC["People"] >= 250, // Should be 2000 for the real version.
         "visible":(rC) => rC["Copper"] && rC["Temple"] && rC["Mountain"] && rC["Pasture"] && rC["Desert"],
         "info":(rC)=>{
             let message = ["Build a _City_. You need a lot of people. Faster with more _People_, _Settlement_, _Copper_, _Temple_, _Mountain_, _Pasture_, _Desert_."];
@@ -1168,6 +1176,82 @@ export const actions03 = [
             if (rC["Temple"] < 1) {
                 message = message.concat(["!You need a _Temple_."]);
             }
+            return message;
+        }
+    },
+    // Unincorporated stuff
+    {
+        "name":"Gather Salt",
+        "pane":"Food Commodities",
+        "effect":(modified, gameState) => {
+            modified["Salt"] += 1;
+            addLog("Gathered 1 _Salt_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Chiefdom"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Chiefdom"],
+        "info":(rC)=>{
+            let message = ["Gather some _Salt_."];
+            return message;
+        }
+    },
+    {
+        "name":"Gather Sand",
+        "pane":"Minerals",
+        "effect":(modified, gameState) => {
+            modified["Sand"] += 1;
+            addLog("Gathered 1 _Sand_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Chiefdom"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Chiefdom"],
+        "info":(rC)=>{
+            let message = ["Gather some _Sand_."];
+            return message;
+        }
+    },
+    {
+        "name":"Grow Cotton",
+        "pane":"Organic Materials",
+        "effect":(modified, gameState) => {
+            modified["Cottn"] += 1;
+            addLog("Grew 1 _Cotton_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Chiefdom"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Chiefdom"],
+        "info":(rC)=>{
+            let message = ["Grow some _Cotton_."];
+            return message;
+        }
+    },
+    {
+        "name":"Grow Hemp",
+        "pane":"Organic Materials",
+        "effect":(modified, gameState) => {
+            modified["Hemp"] += 1;
+            addLog("Grew 1 _Hemp_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Chiefdom"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Chiefdom"],
+        "info":(rC)=>{
+            let message = ["Grow some _Hemp_."];
+            return message;
+        }
+    },
+    {
+        "name":"Grow Bamboo",
+        "pane":"Organic Materials",
+        "effect":(modified, gameState) => {
+            modified["Bamboo"] += 1;
+            addLog("Grew 1 _Bamboo_.",gameState);
+        },
+        "speed":(rC) => {return 0.1},
+        "canExecute":(rC) => rC["Chiefdom"]>=1,
+        "visible":(rC,more) => more.actionCount["Form a Chiefdom"],
+        "info":(rC)=>{
+            let message = ["Grow some _Bamboo_."];
             return message;
         }
     }
