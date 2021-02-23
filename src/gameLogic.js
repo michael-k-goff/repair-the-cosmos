@@ -160,9 +160,7 @@ export const updateActionProgress = (gameState, ms) => {
         // This if statement cancels actions staged by be canceled by simply skipping over their copying.
         if (actionDone(gameState, key, cancelAll)) {
             var prog = gameState.actionProgress[key];
-            var speed_mod = prog["action"]["auto"]?1:directSpeedMod(num_actions);
-            // Real version should start with 0.001 * ...
-            if (prog.action.auto) {speed_mod *= 0.001} // Comment this out for real version
+            var speed_mod = 0.001*(prog["action"]["auto"]?1:directSpeedMod(num_actions));
             prog["timeLeft"] -= speed_mod*ms*prog["action"]["speed"](gameState.resourceCount);
             checkActionDone(gameState, key, prog);
         }
@@ -229,7 +227,7 @@ export const init_resource_count = () => {
     for (var key in resources) {
         irc[resources[key].name] = 0;
     }
-    irc["People"] = 2; // Adam and Eve
+    irc["Australopithecus"] = 2; // Adam and Eve
     irc["Garden of Eden"] = 1;
     return irc;
 }

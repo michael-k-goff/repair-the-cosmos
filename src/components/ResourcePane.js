@@ -165,7 +165,9 @@ const Subsubpanes = ({gameState}) => {
             </>
         );
     }
-    let subsubpanes = panes_by_pane[gameState.subpane].filter((x)=>x.visible(gameState));
+    let subsubpanes = panes_by_pane[gameState.subpane].filter((x)=>{
+        return x.visible(gameState)}
+    );
     if (subsubpanes.length%2) {
         subsubpanes = subsubpanes.concat([{name:"Null Pane"}]);
     }
